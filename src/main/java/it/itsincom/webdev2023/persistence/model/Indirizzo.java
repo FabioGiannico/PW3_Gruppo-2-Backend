@@ -8,6 +8,7 @@ public class Indirizzo {
     private int cap;
 
 
+    // GETTER E SETTER
     public int getId() {
         return id;
     }

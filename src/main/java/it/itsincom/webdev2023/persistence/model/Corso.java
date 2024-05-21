@@ -1,6 +1,8 @@
 package it.itsincom.webdev2023.persistence.model;
 
-import java.util.Date;
+import jakarta.json.bind.annotation.JsonbDateFormat;
+
+import java.time.LocalDate;
 
 public class Corso {
 
@@ -12,10 +14,12 @@ public class Corso {
     private String programma;
     private String requisiti;
     private int postiDisponibili;
-    private Date dataInizio;
-    private Date dataFine;
+    @JsonbDateFormat("yyyy-MM-dd")
+    private LocalDate dataInizio;
+    @JsonbDateFormat("yyyy-MM-dd")
+    private LocalDate dataFine;
 
-
+    // GETTER E SETTER
     public int getId() {
         return id;
     }
@@ -80,19 +84,36 @@ public class Corso {
         this.postiDisponibili = postiDisponibili;
     }
 
-    public Date getDataInizio() {
+    public LocalDate getDataInizio() {
         return dataInizio;
     }
 
-    public void setDataInizio(Date dataInizio) {
+    public void setDataInizio(LocalDate dataInizio) {
         this.dataInizio = dataInizio;
     }
 
-    public Date getDataFine() {
+    public LocalDate getDataFine() {
         return dataFine;
     }
 
-    public void setDataFine(Date dataFine) {
+    public void setDataFine(LocalDate dataFine) {
         this.dataFine = dataFine;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Corso{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", descrizione='" + descrizione + '\'' +
+                ", categoria='" + categoria + '\'' +
+                ", durata=" + durata +
+                ", programma='" + programma + '\'' +
+                ", requisiti='" + requisiti + '\'' +
+                ", postiDisponibili=" + postiDisponibili +
+                ", dataInizio=" + dataInizio +
+                ", dataFine=" + dataFine +
+                '}';
     }
 }

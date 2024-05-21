@@ -13,6 +13,7 @@ public class Colloquio {
     private Esito esito;
 
 
+    // GETTER E SETTER
     public int getId() {
         return id;
     }

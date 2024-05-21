@@ -11,6 +11,8 @@ public class Candidatura {
     private StatoCandidatura stato;
     private int risultato;
 
+
+    // GETTER E SETTER
     public int getId() {
         return id;
     }

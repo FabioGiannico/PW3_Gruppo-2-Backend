@@ -17,6 +17,7 @@ public class Utente {
     private Timestamp registrazione;
 
 
+    // GETTER E SETTER
     public int getId() {
         return id;
     }
