@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class UtenteRepository {
@@ -35,7 +36,7 @@ public class UtenteRepository {
                     statement.setString(3, utente.getCognome());
                     statement.setString(4, utente.getEmail());
                     statement.setString(5, utente.getPasswordHash());
-                    statement.setString(6, utente.getRuolo().name());
+                    statement.setString(6, "utente");
                     statement.setString(7, utente.getTelefono());
                     statement.setDate(8, utente.getDataNascita());
                     statement.setInt(9, utente.getIndirizzo());
@@ -73,7 +74,7 @@ public class UtenteRepository {
         return false;
     }
 
-    public List<Utente> getAllUtente() {
+    public List<Utente> getAllUtenti() {
         List<Utente> listaUtenti = new ArrayList<>();
         try {
             try (Connection connection = dataSource.getConnection()) {
@@ -100,6 +101,64 @@ public class UtenteRepository {
         }
         return listaUtenti;
 
+    }
+
+    public Optional<Utente> findByNomeCognomePasswordHash(String nome, String cognome, String passwordHash){
+        try {
+            try (Connection connection = dataSource.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE nome = ? AND cognome = ? AND password_hash = ?")) {
+                    statement.setString(1, nome);
+                    statement.setString(2, cognome);
+                    statement.setString(3, passwordHash);
+                    var resultSet = statement.executeQuery();
+                    while (resultSet.next()) {
+                        var utente = new Utente();
+                        utente.setId(resultSet.getInt("id_utente"));
+                        utente.setNome(resultSet.getString("nome"));
+                        utente.setCognome(resultSet.getString("cognome"));
+                        utente.setEmail(resultSet.getString("email"));
+                        utente.setPasswordHash(resultSet.getString("password_hash"));
+                        utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
+                        utente.setTelefono(resultSet.getString("telefono"));
+                        utente.setDataNascita(resultSet.getDate("data_nascita"));
+                        utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
+                        utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
+                        return Optional.of(utente);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
+
+    public Utente getUtenteById(int id) {
+        try {
+            try (Connection connection = dataSource.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE id_utente = ?")) {
+                    statement.setInt(1, id);
+                    var resultSet = statement.executeQuery();
+                    while (resultSet.next()) {
+                        var utente = new Utente();
+                        utente.setId(resultSet.getInt("id_utente"));
+                        utente.setNome(resultSet.getString("nome"));
+                        utente.setCognome(resultSet.getString("cognome"));
+                        utente.setEmail(resultSet.getString("email"));
+                        utente.setPasswordHash(resultSet.getString("password_hash"));
+                        utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
+                        utente.setTelefono(resultSet.getString("telefono"));
+                        utente.setDataNascita(resultSet.getDate("data_nascita"));
+                        utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
+                        utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
+                        return utente;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
 }
