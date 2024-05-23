@@ -178,4 +178,33 @@ public class CorsoRepository {
         }
         return listaIdUtenti;
     }
+
+    public Corso getCorsoById(int id) throws SQLException {
+        Corso corso = null;
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM corsi WHERE id_corso = ?")) {
+                statement.setInt(1, id);
+                var resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    corso = new Corso();
+
+                    corso.setId(resultSet.getInt("id_corso"));
+                    corso.setNome(resultSet.getString("nome_corso"));
+                    corso.setDescrizione(resultSet.getString("descrizione"));
+                    corso.setCategoria(resultSet.getString("categoria"));
+                    corso.setDurata(resultSet.getInt("durata"));
+                    corso.setProgramma(resultSet.getString("programma"));
+                    corso.setRequisiti(resultSet.getString("requisiti"));
+                    corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
+                    corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
+                    corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
+                }
+            }
+        }
+
+        return corso;
+    }
 }

@@ -74,11 +74,11 @@ public class CorsoResource {
     public List<Candidatura> getAllCandidature() throws SQLException {
         return corsoRepository.getAllCandidature();
     }
-    // VEDE CHI E' IN LISTA PER UN CERTO CORSO
+    // TROVA CORSO PER ID
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Utente> getListaIdUtentiPerCorso(@PathParam("id") int id) throws SQLException {
-        return utenteRepository.getListaUtentiById(id);
+    public Corso getCorsoById(@PathParam("id") int id) throws SQLException {
+        return corsoRepository.getCorsoById(id);
     }
 }
