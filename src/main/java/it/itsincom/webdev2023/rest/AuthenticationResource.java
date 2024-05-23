@@ -27,6 +27,7 @@ public class AuthenticationResource {
         this.utenteService = utenteService;
     }
 
+    // REGISTRA UN NUOVO UTENTE
     @POST
     @Path("/register")
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +35,7 @@ public class AuthenticationResource {
         return utenteService.createUtente(utente);
     }
 
+    // FA IL LOGIN
     @POST
     @Path("/login")
     @Produces()
@@ -45,6 +47,7 @@ public class AuthenticationResource {
                 .build();
     }
 
+    // FA IL LOGOUT
     @DELETE
     @Path("/logout")
     public Response logout(@CookieParam("SESSION_COOKIE") int sessionId) {
@@ -55,6 +58,7 @@ public class AuthenticationResource {
                 .build();
     }
 
+    // OTTIENE LE INFO DELL'UTENTE
     @GET
     @Path("/profile")
     public CreateUtenteResponse getProfile(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws WrongUsernameOrPasswordException {

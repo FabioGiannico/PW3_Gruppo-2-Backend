@@ -19,11 +19,13 @@ import java.util.Optional;
 public class UtenteRepository {
 
     private final DataSource dataSource;
+    private final CorsoRepository corsoRepository;
 
-    public UtenteRepository(DataSource dataSource) {
+    public UtenteRepository(DataSource dataSource, CorsoRepository corsoRepository) {
         this.dataSource = dataSource;
+        this.corsoRepository = corsoRepository;
     }
-
+    // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Utente createUtente(Utente utente) {
         if (checkDouble(utente.getNome(), utente.getCognome(), utente.getPasswordHash())) {
             throw new BadRequestException("Un utente con lo stesso nome, cognome e passwordHash esiste già");
@@ -73,7 +75,7 @@ public class UtenteRepository {
         }
         return false;
     }
-
+    // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public List<Utente> getAllUtenti() {
         List<Utente> listaUtenti = new ArrayList<>();
         try {
@@ -102,7 +104,7 @@ public class UtenteRepository {
         return listaUtenti;
 
     }
-
+    // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Optional<Utente> findByNomeCognomePasswordHash(String nome, String cognome, String passwordHash){
         try {
             try (Connection connection = dataSource.getConnection()) {
@@ -133,6 +135,7 @@ public class UtenteRepository {
         return Optional.empty();
     }
 
+    // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Utente getUtenteById(int id) {
         try {
             try (Connection connection = dataSource.getConnection()) {
@@ -161,4 +164,32 @@ public class UtenteRepository {
         return null;
     }
 
+    // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
+    // CON UN CICLO FOR OTTIENE OGNI UTENTE TRAMITE IL SUO ID
+    public List<Utente> getListaUtentiById(int idCorso) throws SQLException {
+        List<Utente> listaUtenti = new ArrayList<>();
+        List<Integer> listaId = corsoRepository.getListaIdUtentiPerCorso(idCorso);
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email FROM utenti WHERE id_utente = ?")) {
+                // CON UN CICLO FOR SI SOSTITUISCE L'id_utente PER OGNI ID NELLA LISTA
+                for (int i = 1; i <= listaId.size(); i++){
+                    statement.setInt(1, i);
+
+                    var resultSet = statement.executeQuery();
+                    while (resultSet.next()) {
+                        var utente = new Utente();
+                        utente.setNome(resultSet.getString("nome"));
+                        utente.setCognome(resultSet.getString("cognome"));
+                        utente.setEmail(resultSet.getString("email"));
+
+                        listaUtenti.add(utente);
+                    }
+                }
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listaUtenti;
+    }
 }
