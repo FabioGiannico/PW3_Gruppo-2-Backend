@@ -60,7 +60,11 @@ public class CorsoResource {
     @POST
     @Path("/{idCorso}/candidature")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void candidatiPerCorso(@PathParam("idCorso") int idCorso, CreateUtenteRequest utente) throws SQLException {
+    public void candidatiPerCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
+        CreateUtenteResponse utente = authenticationService.getProfile(sessionId);
+        if (utente == null) {
+            //TODO: Errore
+        }
         corsoRepository.candidatiPerCorso(utente.getId(), idCorso);
     }
 

@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest;
 
+import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
@@ -31,16 +32,7 @@ public class AuthenticationResource {
     @Path("/register")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse register(@FormParam("nome") String nome,
-                                         @FormParam("cognome") String cognome,
-                                         @FormParam("email") String email,
-                                         @FormParam("password") String password) {
-        CreateUtenteRequest request = new CreateUtenteRequest();
-        request.setNome(nome);
-        request.setCognome(cognome);
-        request.setEmail(email);
-        request.setPassword(password);
-        request.setRegistrazione(new Timestamp(System.currentTimeMillis()));
+    public CreateUtenteResponse register(@BeanParam CreateUtenteRequest request) {
         return utenteService.createUtente(request);
     }
 
@@ -52,7 +44,7 @@ public class AuthenticationResource {
     public Response login(@FormParam("email") String email,
                           @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
         int sessione = authenticationService.login(email, password);
-        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").value(String.valueOf(sessione)).build();
+        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").path("/").value(String.valueOf(sessione)).build();
         return Response.ok()
                 .cookie(sessionCookie)
                 .build();

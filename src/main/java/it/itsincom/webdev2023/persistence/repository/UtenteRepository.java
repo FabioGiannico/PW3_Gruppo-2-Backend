@@ -105,13 +105,14 @@ public class UtenteRepository {
     public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash){
         try {
             try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email, password_hash FROM utenti WHERE email = ? AND password_hash = ?")) {
+                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash FROM utenti WHERE email = ? AND password_hash = ?")) {
                     statement.setString(1, email);
                     statement.setString(2, passwordHash);
                     var resultSet = statement.executeQuery();
 
                     while (resultSet.next()) {
                         var utente = new Utente();
+                        utente.setId(resultSet.getInt("id_utente"));
                         utente.setNome(resultSet.getString("nome"));
                         utente.setCognome(resultSet.getString("cognome"));
                         utente.setEmail(resultSet.getString("email"));

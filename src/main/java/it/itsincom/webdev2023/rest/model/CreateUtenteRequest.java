@@ -1,17 +1,23 @@
 package it.itsincom.webdev2023.rest.model;
 
 import it.itsincom.webdev2023.persistence.model.Ruolo;
+import jakarta.ws.rs.FormParam;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 public class CreateUtenteRequest {
 
+    @FormParam("nome")
     private String nome;
+    @FormParam("cognome")
     private String cognome;
+    @FormParam("email")
     private String email;
+    @FormParam("password")
     private String password;
-    private Timestamp registrazione;
+    private Timestamp registrazione = new Timestamp(System.currentTimeMillis());
+    @FormParam("ruolo")
+    private Ruolo ruolo;
 
     public String getNome() {
         return nome;
@@ -51,5 +57,13 @@ public class CreateUtenteRequest {
 
     public void setRegistrazione(Timestamp registrazione) {
         this.registrazione = registrazione;
+    }
+
+    public Ruolo getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(Ruolo ruolo) {
+        this.ruolo = ruolo;
     }
 }
