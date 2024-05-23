@@ -13,6 +13,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
+import java.sql.Timestamp;
+
 @Path("/auth")
 public class AuthenticationResource {
 
@@ -22,7 +24,6 @@ public class AuthenticationResource {
 
     public AuthenticationResource(AuthenticationService authenticationService, UtenteRepository utenteRepository, UtenteService utenteService) {
         this.authenticationService = authenticationService;
-
         this.utenteRepository = utenteRepository;
         this.utenteService = utenteService;
     }
@@ -30,17 +31,29 @@ public class AuthenticationResource {
     // REGISTRA UN NUOVO UTENTE
     @POST
     @Path("/register")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse createUtenteResponse(CreateUtenteRequest utente) {
-        return utenteService.createUtente(utente);
+    public CreateUtenteResponse register(@FormParam("nome") String nome,
+                                         @FormParam("cognome") String cognome,
+                                         @FormParam("email") String email,
+                                         @FormParam("password") String password) {
+        CreateUtenteRequest request = new CreateUtenteRequest();
+        request.setNome(nome);
+        request.setCognome(cognome);
+        request.setEmail(email);
+        request.setPassword(password);
+        request.setRegistrazione(new Timestamp(System.currentTimeMillis()));
+        return utenteService.createUtente(request);
     }
 
     // FA IL LOGIN
     @POST
     @Path("/login")
-    @Produces()
-    public Response login(@FormParam("nome") String nome, @FormParam("cognome") String cognome, @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
-        int sessione = authenticationService.login(nome, cognome, password);
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(@FormParam("email") String email,
+                          @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
+        int sessione = authenticationService.login(email, password);
         NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").value(String.valueOf(sessione)).build();
         return Response.ok()
                 .cookie(sessionCookie)

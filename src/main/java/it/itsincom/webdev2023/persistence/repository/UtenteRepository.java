@@ -27,22 +27,19 @@ public class UtenteRepository {
     }
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Utente createUtente(Utente utente) {
-        if (checkDouble(utente.getNome(), utente.getCognome(), utente.getPasswordHash())) {
-            throw new BadRequestException("Un utente con lo stesso nome, cognome e passwordHash esiste già");
+        if (checkDouble(utente.getEmail())) {
+            throw new BadRequestException("Un utente con questa email è già registrato");
         }
         try {
             try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement("INSERT INTO utenti (id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement statement = connection.prepareStatement("INSERT INTO utenti (id_utente, nome, cognome, email, password_hash, ruolo) VALUES (?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                     statement.setInt(1, utente.getId());
                     statement.setString(2, utente.getNome());
                     statement.setString(3, utente.getCognome());
                     statement.setString(4, utente.getEmail());
                     statement.setString(5, utente.getPasswordHash());
                     statement.setString(6, "utente");
-                    statement.setString(7, utente.getTelefono());
-                    statement.setDate(8, utente.getDataNascita());
-                    statement.setInt(9, utente.getIndirizzo());
-                    statement.setTimestamp(10, utente.getRegistrazione());
+
                     statement.executeUpdate();
                     ResultSet generatedKeys = statement.getGeneratedKeys();
                     if (generatedKeys.next()) {
@@ -58,12 +55,10 @@ public class UtenteRepository {
         return utente;
     }
 
-    public boolean checkDouble(String nome, String cognome, String passwordHash) {
+    public boolean checkDouble(String email) {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM utenti WHERE nome = ? AND cognome = ? AND password_hash = ?")) {
-                statement.setString(1, nome);
-                statement.setString(2, cognome);
-                statement.setString(3, passwordHash);
+            try (PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM utenti WHERE email = ?")) {
+                statement.setString(1, email);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     int count = resultSet.getInt(1);
@@ -75,6 +70,7 @@ public class UtenteRepository {
         }
         return false;
     }
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public List<Utente> getAllUtenti() {
         List<Utente> listaUtenti = new ArrayList<>();
@@ -105,26 +101,21 @@ public class UtenteRepository {
 
     }
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
-    public Optional<Utente> findByNomeCognomePasswordHash(String nome, String cognome, String passwordHash){
+    public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash){
         try {
             try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE nome = ? AND cognome = ? AND password_hash = ?")) {
-                    statement.setString(1, nome);
-                    statement.setString(2, cognome);
-                    statement.setString(3, passwordHash);
+                try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email, password_hash FROM utenti WHERE email = ? AND password_hash = ?")) {
+                    statement.setString(1, email);
+                    statement.setString(2, passwordHash);
                     var resultSet = statement.executeQuery();
+
                     while (resultSet.next()) {
                         var utente = new Utente();
-                        utente.setId(resultSet.getInt("id_utente"));
                         utente.setNome(resultSet.getString("nome"));
                         utente.setCognome(resultSet.getString("cognome"));
                         utente.setEmail(resultSet.getString("email"));
                         utente.setPasswordHash(resultSet.getString("password_hash"));
-                        utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
-                        utente.setTelefono(resultSet.getString("telefono"));
-                        utente.setDataNascita(resultSet.getDate("data_nascita"));
-                        utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
-                        utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
+
                         return Optional.of(utente);
                     }
                 }

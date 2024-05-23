@@ -6,24 +6,12 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 public class CreateUtenteRequest {
-    private int id;
+
     private String nome;
     private String cognome;
     private String email;
     private String password;
-    private Ruolo ruolo;
-    private String telefono;
-    private int indirizzo;      //Riferisce alla tabella degli indirizzi di casa
-    private Date dataNascita;
     private Timestamp registrazione;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
@@ -49,36 +37,12 @@ public class CreateUtenteRequest {
         this.email = email;
     }
 
-    public Ruolo getRuolo() {
-        return ruolo;
+    public String getPassword() {
+        return password;
     }
 
-    public void setRuolo(Ruolo ruolo) {
-        this.ruolo = ruolo;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public int getIndirizzo() {
-        return indirizzo;
-    }
-
-    public void setIndirizzo(int indirizzo) {
-        this.indirizzo = indirizzo;
-    }
-
-    public Date getDataNascita() {
-        return dataNascita;
-    }
-
-    public void setDataNascita(Date dataNascita) {
-        this.dataNascita = dataNascita;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Timestamp getRegistrazione() {
@@ -87,13 +51,5 @@ public class CreateUtenteRequest {
 
     public void setRegistrazione(Timestamp registrazione) {
         this.registrazione = registrazione;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

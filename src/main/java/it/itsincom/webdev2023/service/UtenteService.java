@@ -7,6 +7,7 @@ import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,22 +25,27 @@ public class UtenteService {
     public CreateUtenteResponse createUtente(CreateUtenteRequest utente){
         // 1. Estrarre la password dalla richiesta
         String password = utente.getPassword();
+
         // 2. Calcolare l'hash della password
         String hash = hashCalculator.calculateHash(password);
-        // 3. Creare l'oggetto partecipante
+
+        // 3. Creare l'oggetto utente
         Utente u = new Utente();
         u.setNome(utente.getNome());
         u.setCognome(utente.getCognome());
         u.setEmail(utente.getEmail());
-        u.setDataNascita(utente.getDataNascita());
-        u.setTelefono(utente.getTelefono());
-        u.setIndirizzo(utente.getIndirizzo());
-        u.setRegistrazione(utente.getRegistrazione());
+        u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
         u.setPasswordHash(hash);
+
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
+
         // 5. Convertire l'oggetto utente in CreateUtenteResponse
-        CreateUtenteResponse response = convertToResponse(creato);
+        CreateUtenteResponse response = new CreateUtenteResponse();
+        response.setId(creato.getId());
+        response.setNome(creato.getNome());
+        response.setCognome(creato.getCognome());
+
         // 6. Restituire CreateUtenteResponse
         return response;
     }
