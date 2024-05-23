@@ -65,6 +65,12 @@ public class UtenteService {
         response.setId(utente.getId());
         response.setNome(utente.getNome());
         response.setCognome(utente.getCognome());
+        response.setEmail(utente.getEmail());
+        response.setRuolo(utente.getRuolo());
+        response.setTelefono(utente.getTelefono());
+        response.setDataNascita(utente.getDataNascita());
+        response.setIndirizzo(utente.getIndirizzo());
+        response.setDataRegistrazione(utente.getRegistrazione());
         return response;
     }
 

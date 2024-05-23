@@ -38,7 +38,7 @@ public class CorsoRepository {
 
                 statement.executeUpdate();
 
-                // Imposta l'ID generato nel corso (se necessario)
+
                 try (var rs = statement.getGeneratedKeys()) {
                     if (rs.next()) {
                         corso.setId(rs.getInt(1));
@@ -58,12 +58,13 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi")) {
+                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi")) {
                 var resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
-                    var corso = new Corso();
+                    Corso corso = new Corso();
 
+                    corso.setId(resultSet.getInt("id_corso"));
                     corso.setNome(resultSet.getString("nome_corso"));
                     corso.setDescrizione(resultSet.getString("descrizione"));
                     corso.setCategoria(resultSet.getString("categoria"));
@@ -80,6 +81,7 @@ public class CorsoRepository {
         }
         return corsi;
     }
+
 
     // OTTIENE LA LISTA DEGLI ID DEGLI UTENTI CANDIDATI AD UN DETERMINATO CORSO
     public List<Integer> getListaIdUtentiPerCorso(int idCorso) throws SQLException {
