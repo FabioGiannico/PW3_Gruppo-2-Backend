@@ -7,9 +7,6 @@ public class CreateUtenteResponse {
     private String cognome;
 
 
-
-
-
     public int getId() {
         return id;
     }
