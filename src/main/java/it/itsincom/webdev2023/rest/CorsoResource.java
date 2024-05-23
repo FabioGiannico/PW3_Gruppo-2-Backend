@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.sql.SQLException;
 import java.util.List;
 
-@Path("/corso")
+@Path("/api/corso")
 public class CorsoResource {
 
     private final CorsoRepository corsoRepository;
