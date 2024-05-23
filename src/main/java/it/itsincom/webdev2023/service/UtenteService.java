@@ -1,12 +1,14 @@
 package it.itsincom.webdev2023.service;
 
 
+import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +18,20 @@ public class UtenteService {
     private final HashCalculator hashCalculator;
     private final UtenteRepository utenteRepository;
 
-    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator){
+
+    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator, DataSource dataSource){
         this.utenteRepository = utenteRepository;
         this.hashCalculator = hashCalculator;
+
     }
+
 
     public CreateUtenteResponse createUtente(CreateUtenteRequest utente){
         // 1. Estrarre la password dalla richiesta
         String password = utente.getPassword();
         // 2. Calcolare l'hash della password
         String hash = hashCalculator.calculateHash(password);
-        // 3. Creare l'oggetto partecipante
+        // 3. Creare l'oggetto utente
         Utente u = new Utente();
         u.setNome(utente.getNome());
         u.setCognome(utente.getCognome());
@@ -36,6 +41,7 @@ public class UtenteService {
         u.setIndirizzo(utente.getIndirizzo());
         u.setRegistrazione(utente.getRegistrazione());
         u.setPasswordHash(hash);
+        u.setRuolo(utente.getRuolo());
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
         // 5. Convertire l'oggetto utente in CreateUtenteResponse
@@ -69,5 +75,11 @@ public class UtenteService {
         //5. Return
         return ur;
     }
+
+
+
+
+
+
 
 }

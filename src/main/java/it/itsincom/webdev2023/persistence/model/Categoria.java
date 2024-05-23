@@ -1,10 +1,8 @@
-package it.itsincom.webdev2023.rest.model;
+package it.itsincom.webdev2023.persistence.model;
 
-public class CreateUtenteResponse {
-
+public class Categoria {
     private int id;
     private String nome;
-    private String cognome;
 
     public int getId() {
         return id;
@@ -21,13 +19,4 @@ public class CreateUtenteResponse {
     public void setNome(String nome) {
         this.nome = nome;
     }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
 }

@@ -7,11 +7,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,13 +28,17 @@ public class UtenteRepository {
         }
         try {
             try (Connection connection = dataSource.getConnection()) {
+                Timestamp currentTimestamp = new Timestamp(new Date().getTime());
+                utente.setRegistrazione(currentTimestamp);
+                int defaultAddressId = 1;
+                utente.setIndirizzo(defaultAddressId);
                 try (PreparedStatement statement = connection.prepareStatement("INSERT INTO utenti (id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                     statement.setInt(1, utente.getId());
                     statement.setString(2, utente.getNome());
                     statement.setString(3, utente.getCognome());
                     statement.setString(4, utente.getEmail());
                     statement.setString(5, utente.getPasswordHash());
-                    statement.setString(6, "utente");
+                    statement.setString(6, utente.getRuolo().name());
                     statement.setString(7, utente.getTelefono());
                     statement.setDate(8, utente.getDataNascita());
                     statement.setInt(9, utente.getIndirizzo());

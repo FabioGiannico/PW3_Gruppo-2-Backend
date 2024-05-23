@@ -17,18 +17,15 @@ import jakarta.ws.rs.core.Response;
 public class AuthenticationResource {
 
     private final AuthenticationService authenticationService;
-    private final UtenteRepository utenteRepository;
     private final UtenteService utenteService;
 
-    public AuthenticationResource(AuthenticationService authenticationService, UtenteRepository utenteRepository, UtenteService utenteService) {
+    public AuthenticationResource(AuthenticationService authenticationService, UtenteService utenteService) {
         this.authenticationService = authenticationService;
-
-        this.utenteRepository = utenteRepository;
         this.utenteService = utenteService;
     }
 
     @POST
-    @Path("/register")
+    @Path("/signup")
     @Produces(MediaType.APPLICATION_JSON)
     public CreateUtenteResponse createUtenteResponse(CreateUtenteRequest utente) {
         return utenteService.createUtente(utente);
@@ -39,7 +36,7 @@ public class AuthenticationResource {
     @Produces()
     public Response login(@FormParam("nome") String nome, @FormParam("cognome") String cognome, @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
         int sessione = authenticationService.login(nome, cognome, password);
-        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").value(String.valueOf(sessione)).build();
+        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").path("/").value(String.valueOf(sessione)).build();
         return Response.ok()
                 .cookie(sessionCookie)
                 .build();
@@ -49,7 +46,7 @@ public class AuthenticationResource {
     @Path("/logout")
     public Response logout(@CookieParam("SESSION_COOKIE") int sessionId) {
         authenticationService.logout(sessionId);
-        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").build();
+        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").path("/").build();
         return Response.ok()
                 .cookie(sessionCookie)
                 .build();

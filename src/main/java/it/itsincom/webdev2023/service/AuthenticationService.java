@@ -64,5 +64,6 @@ public class AuthenticationService {
         int utenteId= s.getPartecipanteId();
         //3. Recupero il partecipante dal database
         return utenteService.getUtenteById(utenteId);
+
     }
 }
