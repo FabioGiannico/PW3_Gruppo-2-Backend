@@ -32,11 +32,11 @@ public class AuthenticationService {
         this.utenteService = utenteService;
     }
 
-    public int login(String nome, String cognome, String password) throws SessionCreationException, WrongUsernameOrPasswordException {
+    public int login(String email, String password) throws SessionCreationException, WrongUsernameOrPasswordException {
         // 0. Calcolo dell'hash della password
         String hash = hashCalculator.calculateHash(password);
         // 1. Controllare che esista un utente con gli stessi nome, cognome, hashpassword
-        Optional<Utente> maybeUtente = utenteRepository.findByNomeCognomePasswordHash(nome, cognome, hash);
+        Optional<Utente> maybeUtente = utenteRepository.findByEmailPasswordHash(email, hash);
         if (maybeUtente.isPresent()) {
             // 2a. Se combaciano, inserire una nuova sessione per quell'utente
             // 3a. Ritornare il codice sessione

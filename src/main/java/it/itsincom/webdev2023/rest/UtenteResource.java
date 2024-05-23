@@ -21,6 +21,7 @@ public class UtenteResource {
         this.utenteService = utenteService;
     }
 
+    // OTTIENE LA LISTA DEGLI UTENTI
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<CreateUtenteResponse> getAllUtenti() {

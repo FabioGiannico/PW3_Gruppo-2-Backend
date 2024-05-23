@@ -8,7 +8,7 @@ import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +18,10 @@ public class UtenteService {
     private final HashCalculator hashCalculator;
     private final UtenteRepository utenteRepository;
 
-
-    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator, DataSource dataSource){
+    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator){
         this.utenteRepository = utenteRepository;
         this.hashCalculator = hashCalculator;
-
     }
-
 
     public CreateUtenteResponse createUtente(CreateUtenteRequest utente){
         // 1. Estrarre la password dalla richiesta
@@ -36,16 +33,19 @@ public class UtenteService {
         u.setNome(utente.getNome());
         u.setCognome(utente.getCognome());
         u.setEmail(utente.getEmail());
-        u.setDataNascita(utente.getDataNascita());
-        u.setTelefono(utente.getTelefono());
-        u.setIndirizzo(utente.getIndirizzo());
-        u.setRegistrazione(utente.getRegistrazione());
+        u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
         u.setPasswordHash(hash);
         u.setRuolo(utente.getRuolo());
+
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
+
         // 5. Convertire l'oggetto utente in CreateUtenteResponse
-        CreateUtenteResponse response = convertToResponse(creato);
+        CreateUtenteResponse response = new CreateUtenteResponse();
+        response.setId(creato.getId());
+        response.setNome(creato.getNome());
+        response.setCognome(creato.getCognome());
+
         // 6. Restituire CreateUtenteResponse
         return response;
     }
@@ -65,6 +65,12 @@ public class UtenteService {
         response.setId(utente.getId());
         response.setNome(utente.getNome());
         response.setCognome(utente.getCognome());
+        response.setEmail(utente.getEmail());
+        response.setRuolo(utente.getRuolo());
+        response.setTelefono(utente.getTelefono());
+        response.setDataNascita(utente.getDataNascita());
+        response.setIndirizzo(utente.getIndirizzo());
+        response.setDataRegistrazione(utente.getRegistrazione());
         return response;
     }
 
@@ -75,11 +81,5 @@ public class UtenteService {
         //5. Return
         return ur;
     }
-
-
-
-
-
-
 
 }

@@ -13,6 +13,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
+import java.sql.Timestamp;
+
 @Path("/auth")
 public class AuthenticationResource {
 
@@ -24,24 +26,39 @@ public class AuthenticationResource {
         this.utenteService = utenteService;
     }
 
+    // REGISTRA UN NUOVO UTENTE
     @POST
-    @Path("/signup")
+    @Path("/register")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse createUtenteResponse(CreateUtenteRequest utente) {
-        return utenteService.createUtente(utente);
+    public CreateUtenteResponse register(@FormParam("nome") String nome,
+                                         @FormParam("cognome") String cognome,
+                                         @FormParam("email") String email,
+                                         @FormParam("password") String password) {
+        CreateUtenteRequest request = new CreateUtenteRequest();
+        request.setNome(nome);
+        request.setCognome(cognome);
+        request.setEmail(email);
+        request.setPassword(password);
+        request.setRegistrazione(new Timestamp(System.currentTimeMillis()));
+        return utenteService.createUtente(request);
     }
 
+    // FA IL LOGIN
     @POST
     @Path("/login")
-    @Produces()
-    public Response login(@FormParam("nome") String nome, @FormParam("cognome") String cognome, @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
-        int sessione = authenticationService.login(nome, cognome, password);
-        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").path("/").value(String.valueOf(sessione)).build();
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(@FormParam("email") String email,
+                          @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
+        int sessione = authenticationService.login(email, password);
+        NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").value(String.valueOf(sessione)).build();
         return Response.ok()
                 .cookie(sessionCookie)
                 .build();
     }
 
+    // FA IL LOGOUT
     @DELETE
     @Path("/logout")
     public Response logout(@CookieParam("SESSION_COOKIE") int sessionId) {
@@ -52,6 +69,7 @@ public class AuthenticationResource {
                 .build();
     }
 
+    // OTTIENE LE INFO DELL'UTENTE
     @GET
     @Path("/profile")
     public CreateUtenteResponse getProfile(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws WrongUsernameOrPasswordException {

@@ -2,6 +2,7 @@ package it.itsincom.webdev2023.persistence.repository;
 
 import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Corso;
+import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -14,11 +15,11 @@ import java.util.List;
 public class CorsoRepository {
 
     private final DataSource dataSource;
-
     public CorsoRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    // PUBBLICA UN NUOVO CORSO
     public Corso createCorso(Corso corso) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
@@ -36,7 +37,7 @@ public class CorsoRepository {
 
                 statement.executeUpdate();
 
-                // Imposta l'ID generato nel corso (se necessario)
+
                 try (var rs = statement.getGeneratedKeys()) {
                     if (rs.next()) {
                         corso.setId(rs.getInt(1));
@@ -50,6 +51,7 @@ public class CorsoRepository {
         return corso;
     }
 
+    // OTTIENE LA LISTA DEI CORSI
     public List<Corso> getAllCorsi() throws SQLException {
         List<Corso> corsi = new ArrayList<>();
 
@@ -89,7 +91,7 @@ public class CorsoRepository {
                 var resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
-                    var corso = new Corso();
+                    Corso corso = new Corso();
 
                     corso.setId(resultSet.getInt("id_corso"));
                     corso.setNome(resultSet.getString("nome_corso"));
@@ -147,5 +149,33 @@ public class CorsoRepository {
             }
         }
         return candidature;
+    }
+
+
+    // OTTIENE LA LISTA DEGLI ID DEGLI UTENTI CANDIDATI AD UN DETERMINATO CORSO
+    public List<Integer> getListaIdUtentiPerCorso(int idCorso) throws SQLException {
+        List<Integer> listaIdUtenti = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "SELECT GROUP_CONCAT(id_utente) FROM candidature WHERE id_corso = ?")) {
+                statement.setInt(1, idCorso);
+                var resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    String idUtente = resultSet.getString("GROUP_CONCAT(id_utente)");
+
+                    if (idUtente != null && !idUtente.isEmpty()) {
+                        String[] arrayIdUtenti = idUtente.split(",");
+                        for (String userId : arrayIdUtenti) {
+                            listaIdUtenti.add(Integer.parseInt(userId.trim()));
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return listaIdUtenti;
     }
 }
