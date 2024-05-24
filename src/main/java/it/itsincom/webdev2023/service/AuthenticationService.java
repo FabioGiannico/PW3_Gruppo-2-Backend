@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.service;
 
+import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.Sessione;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
@@ -64,6 +65,6 @@ public class AuthenticationService {
         int utenteId= s.getPartecipanteId();
         //3. Recupero il partecipante dal database
         return utenteService.getUtenteById(utenteId);
-
     }
+
 }

@@ -157,6 +157,34 @@ public class UtenteRepository {
         return null;
     }
 
+    public Utente getUtenteByRuolo(Ruolo ruolo) {
+        try {
+            try (Connection connection = dataSource.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE ruolo = ?")) {
+                    statement.setString(1, ruolo.name());
+                    var resultSet = statement.executeQuery();
+                    while (resultSet.next()) {
+                        var utente = new Utente();
+                        utente.setId(resultSet.getInt("id_utente"));
+                        utente.setNome(resultSet.getString("nome"));
+                        utente.setCognome(resultSet.getString("cognome"));
+                        utente.setEmail(resultSet.getString("email"));
+                        utente.setPasswordHash(resultSet.getString("password_hash"));
+                        utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
+                        utente.setTelefono(resultSet.getString("telefono"));
+                        utente.setDataNascita(resultSet.getDate("data_nascita"));
+                        utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
+                        utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
+                        return utente;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
     // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
     // CON UN CICLO FOR OTTIENE OGNI UTENTE TRAMITE IL SUO ID
     public List<Utente> getListaUtentiById(int idCorso) throws SQLException {
@@ -184,5 +212,16 @@ public class UtenteRepository {
             throw new RuntimeException(e);
         }
         return listaUtenti;
+    }
+
+    public void deleteUtente(int id) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("DELETE FROM utenti WHERE id_utente = ?")) {
+                statement.setInt(1, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

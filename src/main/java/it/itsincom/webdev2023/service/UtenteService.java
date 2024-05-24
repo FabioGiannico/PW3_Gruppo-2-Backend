@@ -2,12 +2,17 @@ package it.itsincom.webdev2023.service;
 
 
 import it.itsincom.webdev2023.persistence.model.Ruolo;
+import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +20,17 @@ import java.util.List;
 @ApplicationScoped
 public class UtenteService {
 
+    private final DataSource dataSource;
     private final HashCalculator hashCalculator;
     private final UtenteRepository utenteRepository;
 
-    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator){
+    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator, DataSource dataSource) {
         this.utenteRepository = utenteRepository;
         this.hashCalculator = hashCalculator;
+        this.dataSource = dataSource;
     }
 
-    public CreateUtenteResponse createUtente(CreateUtenteRequest utente){
+    public CreateUtenteResponse createUtente(CreateUtenteRequest utente) {
         // 1. Estrarre la password dalla richiesta
         String password = utente.getPassword();
         // 2. Calcolare l'hash della password
@@ -74,12 +81,14 @@ public class UtenteService {
         return response;
     }
 
-    public CreateUtenteResponse getUtenteById(int utenteId){
+    public CreateUtenteResponse getUtenteById(int utenteId) {
         Utente utente = utenteRepository.getUtenteById(utenteId);
         //4. Conversione
         CreateUtenteResponse ur = convertToResponse(utente);
         //5. Return
         return ur;
     }
+
+
 
 }

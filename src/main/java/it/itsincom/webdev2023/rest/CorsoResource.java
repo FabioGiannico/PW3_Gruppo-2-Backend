@@ -14,6 +14,7 @@ import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -44,10 +45,21 @@ public class CorsoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Corso createCorso(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, Corso corso) throws SQLException {
         CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
-       // if (profile == null || profile.getRuolo != Ruolo.amministratore) {
-            // Errore
-       // }
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a creare un corso");
+        }
         return corsoRepository.createCorso(corso);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteCorso(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
+        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un corso");
+        }
+        corsoRepository.deleteCorso(id);
+        return Response.ok().build();
     }
 
     @GET
@@ -81,4 +93,27 @@ public class CorsoResource {
     public Corso getCorsoById(@PathParam("id") int id) throws SQLException {
         return corsoRepository.getCorsoById(id);
     }
+
+    //CAMBIARE LO STATO DELL'UTENTE DA CANDIDATO A ISCRITTO
+    @PUT
+    @Path("/{idCorso}/candidature/{idUtente}/accetta")
+    public void iscriviUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("idCorso") int idCorso, @PathParam("idUtente") int idUtente) throws SQLException {
+        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un corso");
+        }
+        corsoRepository.iscriviUtente(idCorso, idUtente);
+    }
+
+   //CAMBIARE LO STATO UTENTE DA CANDIDATO A RIFIUTATO
+    @PUT
+    @Path("/{idCorso}/candidature/{idUtente}/rifiuta")
+    public void rifiutaUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId,@PathParam("idCorso") int idCorso, @PathParam("idUtente") int idUtente) throws SQLException {
+        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un corso");
+        }
+        corsoRepository.rifiutaUtente(idCorso, idUtente);
+    }
+
 }
