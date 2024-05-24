@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("/utenti")
+@Path("/api/utenti")
 public class UtenteResource {
 
     private final UtenteService utenteService;
@@ -43,6 +43,10 @@ public class UtenteResource {
         return Response.ok().build();
     }
 
-
-
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CreateUtenteResponse getUtenteById(@PathParam("id") int id) {
+        return utenteService.getUtenteById(id);
+    }
 }
