@@ -3,6 +3,7 @@ package it.itsincom.webdev2023.persistence.repository;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.Utente;
 
+import it.itsincom.webdev2023.service.HashCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
@@ -18,10 +19,12 @@ public class UtenteRepository {
 
     private final DataSource dataSource;
     private final CorsoRepository corsoRepository;
+    private final HashCalculator hashCalculator;
 
-    public UtenteRepository(DataSource dataSource, CorsoRepository corsoRepository) {
+    public UtenteRepository(DataSource dataSource, CorsoRepository corsoRepository, HashCalculator hashCalculator) {
         this.dataSource = dataSource;
         this.corsoRepository = corsoRepository;
+        this.hashCalculator = hashCalculator;
     }
 
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
@@ -202,20 +205,45 @@ public class UtenteRepository {
         }
     }
     // IMPOSTA COGNOME
-    public void setCognome (int id, String cognome){
-
+    public void setCognome(int id, String cognome) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET cognome = ? WHERE id = ?")) {
+                statement.setString(1, cognome);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
     }
     // IMPOSTA EMAIL
-    public void setEmail (int id, String email){
-
+    public void setEmail(int id, String email) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET email = ? WHERE id = ?")) {
+                statement.setString(1, email);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
     }
     // IMPOSTA PSW
-    public void setPassword (int id, String password){
-
+    public void setPassword(int id, String password) throws SQLException {
+        var psw = hashCalculator.calculateHash(password);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET password = ? WHERE id = ?")) {
+                statement.setString(1, psw);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
     }
     // IMPOSTA TELEFONO
-    public void setTelefono (int id, String telefono){
-
+    public void setTelefono(int id, String telefono) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET telefono = ? WHERE id = ?")) {
+                statement.setString(1, telefono);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
     }
     // IMPOSTA INDIRIZZO
     // IMPOSTA DATA DI NASCITA
