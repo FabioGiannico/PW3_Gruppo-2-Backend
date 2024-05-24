@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import jakarta.ws.rs.FormParam;
 
@@ -7,16 +8,16 @@ import java.sql.Timestamp;
 
 public class CreateUtenteRequest {
 
-    @FormParam("nome")
     private String nome;
-    @FormParam("cognome")
+
     private String cognome;
-    @FormParam("email")
+
     private String email;
-    @FormParam("password")
+
     private String password;
+
     private Timestamp registrazione = new Timestamp(System.currentTimeMillis());
-    @FormParam("ruolo")
+
     private Ruolo ruolo;
 
     public String getNome() {

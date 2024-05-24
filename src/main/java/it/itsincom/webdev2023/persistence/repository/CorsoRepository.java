@@ -21,6 +21,7 @@ public class CorsoRepository {
 
     // PUBBLICA UN NUOVO CORSO
     public Corso createCorso(Corso corso) throws SQLException {
+
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -206,5 +207,53 @@ public class CorsoRepository {
         }
 
         return corso;
+    }
+
+    public void deleteCorso(int id) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "DELETE FROM corsi WHERE id_corso = ?")) {
+                statement.setInt(1, id);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void iscriviUtente(int idCorso, int idUtente) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
+                statement.setString(1, StatoCandidatura.selezionato.name());
+                statement.setInt(2, idCorso);
+                statement.setInt(3, idUtente);
+
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void rifiutaUtente(int idCorso, int idUtente) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
+                statement.setString(1, StatoCandidatura.rifiutato.name());
+                statement.setInt(2, idCorso);
+                statement.setInt(3, idUtente);
+
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
