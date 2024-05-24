@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.sql.Timestamp;
 
-@Path("/auth")
+@Path("/api/auth")
 public class AuthenticationResource {
 
     private final AuthenticationService authenticationService;
