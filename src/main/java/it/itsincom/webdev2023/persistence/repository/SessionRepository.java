@@ -22,7 +22,7 @@ public class SessionRepository {
     public int insertSession(int idPartecipante) throws SQLException {
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO session (utente_id) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO session (partecipanti_id) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setInt(1, idPartecipante);
                 statement.executeUpdate();
                 ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -55,7 +55,6 @@ public class SessionRepository {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("SELECT id, utente_id, data_creazione FROM session WHERE id = ?")) {
                 statement.setInt(1, sessionId);
-                ;
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     var sessione = new Sessione();
@@ -69,6 +68,22 @@ public class SessionRepository {
             throw new RuntimeException(e);
         }
         throw new RuntimeException("non è presente alcuna sessione con id" + sessionId);
+    }
 
+    public int getIdBySession(int sessionCookie) throws SQLException {
+        ResultSet rs;
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT partecipanti_id FROM session WHERE id_session = ?")) {
+                statement.setInt(1, sessionCookie);
+                rs = statement.executeQuery();
+
+                while (rs.next()) {
+                    return rs.getInt("partecipanti_id");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        throw new IllegalStateException("Nessun partecipante trovato per il cookie di sessione: " + sessionCookie);
     }
 }

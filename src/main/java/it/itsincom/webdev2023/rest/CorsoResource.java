@@ -74,6 +74,7 @@ public class CorsoResource {
     public List<Candidatura> getAllCandidature() throws SQLException {
         return corsoRepository.getAllCandidature();
     }
+
     // TROVA CORSO PER ID
     @GET
     @Path("/{id}")

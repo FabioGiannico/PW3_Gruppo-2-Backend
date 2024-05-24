@@ -23,6 +23,7 @@ public class UtenteRepository {
         this.dataSource = dataSource;
         this.corsoRepository = corsoRepository;
     }
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Utente createUtente(Utente utente) {
         if (checkDouble(utente.getEmail())) {
@@ -101,8 +102,9 @@ public class UtenteRepository {
         return listaUtenti;
 
     }
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
-    public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash){
+    public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash FROM utenti WHERE email = ? AND password_hash = ?")) {
@@ -166,7 +168,7 @@ public class UtenteRepository {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email FROM utenti WHERE id_utente = ?")) {
                 // CON UN CICLO FOR SI SOSTITUISCE L'id_utente PER OGNI ID NELLA LISTA
-                for (int i = 1; i <= listaId.size(); i++){
+                for (int i = 1; i <= listaId.size(); i++) {
                     statement.setInt(1, i);
 
                     var resultSet = statement.executeQuery();
@@ -180,9 +182,43 @@ public class UtenteRepository {
                     }
                 }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return listaUtenti;
     }
+
+
+    // IMPOSTA NOME
+    public void setNome (int id, String nome) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti  SET nome = ? WHERE id = ?")) {
+                statement.setString(1, nome);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    // IMPOSTA COGNOME
+    public void setCognome (int id, String cognome){
+
+    }
+    // IMPOSTA EMAIL
+    public void setEmail (int id, String email){
+
+    }
+    // IMPOSTA PSW
+    public void setPassword (int id, String password){
+
+    }
+    // IMPOSTA TELEFONO
+    public void setTelefono (int id, String telefono){
+
+    }
+    // IMPOSTA INDIRIZZO
+    // IMPOSTA DATA DI NASCITA
+
+
 }
