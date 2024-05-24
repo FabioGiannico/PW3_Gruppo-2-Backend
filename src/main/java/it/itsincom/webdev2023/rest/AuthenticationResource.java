@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
@@ -9,6 +10,7 @@ import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
 import it.itsincom.webdev2023.service.exception.SessionCreationException;
 import it.itsincom.webdev2023.service.exception.WrongUsernameOrPasswordException;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
@@ -30,25 +32,28 @@ public class AuthenticationResource {
     // REGISTRA UN NUOVO UTENTE
     @POST
     @Path("/register")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse register(@BeanParam CreateUtenteRequest request) {
+    public CreateUtenteResponse register(CreateUtenteRequest request) {
         return utenteService.createUtente(request);
     }
 
     // FA IL LOGIN
     @POST
     @Path("/login")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@FormParam("email") String email,
-                          @FormParam("password") String password) throws WrongUsernameOrPasswordException, SessionCreationException {
+    public Response login(JsonObject loginRequest) throws WrongUsernameOrPasswordException, SessionCreationException {
+        String email = loginRequest.getString("email");
+        String password = loginRequest.getString("password");
+
         int sessione = authenticationService.login(email, password);
         NewCookie sessionCookie = new NewCookie.Builder("SESSION_COOKIE").path("/").value(String.valueOf(sessione)).build();
         return Response.ok()
                 .cookie(sessionCookie)
                 .build();
     }
+
 
     // FA IL LOGOUT
     @DELETE
