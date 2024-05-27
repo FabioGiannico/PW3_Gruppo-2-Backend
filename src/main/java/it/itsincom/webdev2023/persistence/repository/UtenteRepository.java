@@ -3,6 +3,7 @@ package it.itsincom.webdev2023.persistence.repository;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.Utente;
 
+import it.itsincom.webdev2023.service.HashCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
 
@@ -18,11 +19,14 @@ public class UtenteRepository {
 
     private final DataSource dataSource;
     private final CorsoRepository corsoRepository;
+    private final HashCalculator hashCalculator;
 
-    public UtenteRepository(DataSource dataSource, CorsoRepository corsoRepository) {
+    public UtenteRepository(DataSource dataSource, CorsoRepository corsoRepository, HashCalculator hashCalculator) {
         this.dataSource = dataSource;
         this.corsoRepository = corsoRepository;
+        this.hashCalculator = hashCalculator;
     }
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Utente createUtente(Utente utente) {
         if (checkDouble(utente.getEmail())) {
@@ -101,8 +105,9 @@ public class UtenteRepository {
         return listaUtenti;
 
     }
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
-    public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash){
+    public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash FROM utenti WHERE email = ? AND password_hash = ?")) {
@@ -157,34 +162,6 @@ public class UtenteRepository {
         return null;
     }
 
-    public Utente getUtenteByRuolo(Ruolo ruolo) {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE ruolo = ?")) {
-                    statement.setString(1, ruolo.name());
-                    var resultSet = statement.executeQuery();
-                    while (resultSet.next()) {
-                        var utente = new Utente();
-                        utente.setId(resultSet.getInt("id_utente"));
-                        utente.setNome(resultSet.getString("nome"));
-                        utente.setCognome(resultSet.getString("cognome"));
-                        utente.setEmail(resultSet.getString("email"));
-                        utente.setPasswordHash(resultSet.getString("password_hash"));
-                        utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
-                        utente.setTelefono(resultSet.getString("telefono"));
-                        utente.setDataNascita(resultSet.getDate("data_nascita"));
-                        utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
-                        utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
-                        return utente;
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
     // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
     // CON UN CICLO FOR OTTIENE OGNI UTENTE TRAMITE IL SUO ID
     public List<Utente> getListaUtentiById(int idCorso) throws SQLException {
@@ -194,7 +171,7 @@ public class UtenteRepository {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email FROM utenti WHERE id_utente = ?")) {
                 // CON UN CICLO FOR SI SOSTITUISCE L'id_utente PER OGNI ID NELLA LISTA
-                for (int i = 1; i <= listaId.size(); i++){
+                for (int i = 1; i <= listaId.size(); i++) {
                     statement.setInt(1, i);
 
                     var resultSet = statement.executeQuery();
@@ -208,20 +185,68 @@ public class UtenteRepository {
                     }
                 }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return listaUtenti;
     }
 
-    public void deleteUtente(int id) {
+
+    // IMPOSTA NOME
+    public void setNome (int id, String nome) {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("DELETE FROM utenti WHERE id_utente = ?")) {
-                statement.setInt(1, id);
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti  SET nome = ? WHERE id = ?")) {
+                statement.setString(1, nome);
+                statement.setInt(2, id);
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+    // IMPOSTA COGNOME
+    public void setCognome(int id, String cognome) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET cognome = ? WHERE id = ?")) {
+                statement.setString(1, cognome);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
+    // IMPOSTA EMAIL
+    public void setEmail(int id, String email) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET email = ? WHERE id = ?")) {
+                statement.setString(1, email);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
+    // IMPOSTA PSW
+    public void setPassword(int id, String password) throws SQLException {
+        var psw = hashCalculator.calculateHash(password);
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET password = ? WHERE id = ?")) {
+                statement.setString(1, psw);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
+    // IMPOSTA TELEFONO
+    public void setTelefono(int id, String telefono) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET telefono = ? WHERE id = ?")) {
+                statement.setString(1, telefono);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
+    // IMPOSTA INDIRIZZO
+    // IMPOSTA DATA DI NASCITA
+
+
 }

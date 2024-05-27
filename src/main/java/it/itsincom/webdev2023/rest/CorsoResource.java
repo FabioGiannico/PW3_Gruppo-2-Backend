@@ -8,7 +8,6 @@ import it.itsincom.webdev2023.service.AuthenticationService;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,10 +16,12 @@ import java.util.List;
 public class CorsoResource {
 
     private final CorsoRepository corsoRepository;
+    private final UtenteRepository utenteRepository;
     private final AuthenticationService authenticationService;
 
     public CorsoResource(CorsoRepository corsoRepository,AuthenticationService authenticationService) {
         this.corsoRepository = corsoRepository;
+        this.utenteRepository = utenteRepository;
         this.authenticationService = authenticationService;
     }
 
@@ -113,6 +114,13 @@ public class CorsoResource {
             throw new RuntimeException("Devi essere loggato per candidarti a un corso");
         }
         corsoRepository.candidatiPerCorso(utente.getId(), idCorso);
+    }
+
+    @GET
+    @Path("/{idCorso}/candidature")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Candidatura> getAllCandidature() throws SQLException {
+        return corsoRepository.getAllCandidature();
     }
 
 
