@@ -4,10 +4,12 @@ import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
+import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
 import jakarta.json.bind.adapter.JsonbAdapter;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -20,11 +22,13 @@ public class UtenteResource {
     private final UtenteService utenteService;
     private final UtenteRepository utenteRepository;
     private final SessionRepository sessionRepository;
+    private final AuthenticationService authenticationService;
 
-    public UtenteResource(UtenteService utenteService, UtenteRepository utenteRepository, SessionRepository sessionRepository) {
+    public UtenteResource(UtenteService utenteService, UtenteRepository utenteRepository, SessionRepository sessionRepository, AuthenticationService authenticationService) {
         this.utenteService = utenteService;
         this.utenteRepository = utenteRepository;
         this.sessionRepository = sessionRepository;
+        this.authenticationService = authenticationService;
     }
 
     // OTTIENE LA LISTA DEGLI UTENTI
@@ -81,6 +85,8 @@ public class UtenteResource {
         // TELEFONO
         utenteRepository.setTelefono(idUtente, telefono);
         // INDIRIZZO
+        utenteRepository.setIndirizzo(idUtente, indirizzo);
         // DATA DI NASCITA
+        utenteRepository.setDataNascita(idUtente, Date.valueOf(dataNascita));
     }
 }

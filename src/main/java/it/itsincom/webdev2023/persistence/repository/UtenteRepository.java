@@ -106,6 +106,18 @@ public class UtenteRepository {
 
     }
 
+    public void deleteUtente(int id) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("DELETE FROM utenti WHERE id_utente = ?")) {
+                statement.setInt(1, id);
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     // TODO SISTEMARE LA TRY-CATCH IN AGGIUNTA
     public Optional<Utente> findByEmailPasswordHash(String email, String passwordHash) {
         try {
@@ -195,7 +207,7 @@ public class UtenteRepository {
     // IMPOSTA NOME
     public void setNome (int id, String nome) {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti  SET nome = ? WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti  SET nome = ? WHERE id_utente = ?")) {
                 statement.setString(1, nome);
                 statement.setInt(2, id);
                 statement.executeUpdate();
@@ -207,7 +219,7 @@ public class UtenteRepository {
     // IMPOSTA COGNOME
     public void setCognome(int id, String cognome) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET cognome = ? WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET cognome = ? WHERE id_utente = ?")) {
                 statement.setString(1, cognome);
                 statement.setInt(2, id);
                 statement.executeUpdate();
@@ -217,7 +229,7 @@ public class UtenteRepository {
     // IMPOSTA EMAIL
     public void setEmail(int id, String email) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET email = ? WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET email = ? WHERE id_utente = ?")) {
                 statement.setString(1, email);
                 statement.setInt(2, id);
                 statement.executeUpdate();
@@ -228,7 +240,7 @@ public class UtenteRepository {
     public void setPassword(int id, String password) throws SQLException {
         var psw = hashCalculator.calculateHash(password);
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET password = ? WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET password_hash = ? WHERE id_utente = ?")) {
                 statement.setString(1, psw);
                 statement.setInt(2, id);
                 statement.executeUpdate();
@@ -238,15 +250,36 @@ public class UtenteRepository {
     // IMPOSTA TELEFONO
     public void setTelefono(int id, String telefono) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET telefono = ? WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET telefono = ? WHERE id_utente = ?")) {
                 statement.setString(1, telefono);
                 statement.setInt(2, id);
                 statement.executeUpdate();
             }
         }
     }
+
+
     // IMPOSTA INDIRIZZO
+    public void setIndirizzo(int id, int indirizzo) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET id_indirizzo = ? WHERE id_utente = ?")) {
+                statement.setInt(1, indirizzo);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
+
     // IMPOSTA DATA DI NASCITA
+    public void setDataNascita(int id, Date dataNascita) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET data_nascita = ? WHERE id_utente = ?")) {
+                statement.setDate(1, (java.sql.Date) dataNascita);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+        }
+    }
 
 
 }
