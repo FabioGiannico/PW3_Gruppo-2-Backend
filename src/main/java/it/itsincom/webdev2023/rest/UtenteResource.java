@@ -5,6 +5,7 @@ import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
+import jakarta.json.bind.adapter.JsonbAdapter;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -33,7 +34,7 @@ public class UtenteResource {
 
     //SOLO L'AMMINISTRATORE ELIMINA DALLA TABELLE UTENTI GLI INSEGNANTI E GLI UTENTI
     @DELETE
-    @Path("/delete/{id}")
+    @Path("/{id}")
     public Response deleteUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
         CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {

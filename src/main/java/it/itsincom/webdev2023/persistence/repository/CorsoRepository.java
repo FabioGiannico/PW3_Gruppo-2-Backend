@@ -2,7 +2,6 @@ package it.itsincom.webdev2023.persistence.repository;
 
 import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Corso;
-import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -15,9 +14,11 @@ import java.util.List;
 public class CorsoRepository {
 
     private final DataSource dataSource;
+
     public CorsoRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
 
     // PUBBLICA UN NUOVO CORSO
     public Corso createCorso(Corso corso) throws SQLException {
@@ -63,18 +64,7 @@ public class CorsoRepository {
 
                 while (resultSet.next()) {
                     var corso = new Corso();
-
-                    corso.setId(resultSet.getInt("id_corso"));
-                    corso.setNome(resultSet.getString("nome_corso"));
-                    corso.setDescrizione(resultSet.getString("descrizione"));
-                    corso.setCategoria(resultSet.getString("categoria"));
-                    corso.setDurata(resultSet.getInt("durata"));
-                    corso.setProgramma(resultSet.getString("programma"));
-                    corso.setRequisiti(resultSet.getString("requisiti"));
-                    corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
-                    corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-                    corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
-
+                    corsoConnection(corso, resultSet);
                     corsi.add(corso);
                 }
             }
@@ -93,18 +83,7 @@ public class CorsoRepository {
 
                 while (resultSet.next()) {
                     Corso corso = new Corso();
-
-                    corso.setId(resultSet.getInt("id_corso"));
-                    corso.setNome(resultSet.getString("nome_corso"));
-                    corso.setDescrizione(resultSet.getString("descrizione"));
-                    corso.setCategoria(resultSet.getString("categoria"));
-                    corso.setDurata(resultSet.getInt("durata"));
-                    corso.setProgramma(resultSet.getString("programma"));
-                    corso.setRequisiti(resultSet.getString("requisiti"));
-                    corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
-                    corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-                    corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
-
+                    corsoConnection(corso, resultSet);
                     corsi.add(corso);
                 }
             }
@@ -191,22 +170,25 @@ public class CorsoRepository {
 
                 if (resultSet.next()) {
                     corso = new Corso();
-
-                    corso.setId(resultSet.getInt("id_corso"));
-                    corso.setNome(resultSet.getString("nome_corso"));
-                    corso.setDescrizione(resultSet.getString("descrizione"));
-                    corso.setCategoria(resultSet.getString("categoria"));
-                    corso.setDurata(resultSet.getInt("durata"));
-                    corso.setProgramma(resultSet.getString("programma"));
-                    corso.setRequisiti(resultSet.getString("requisiti"));
-                    corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
-                    corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-                    corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
+                    corsoConnection(corso, resultSet);
                 }
             }
         }
 
         return corso;
+    }
+
+    private void corsoConnection(Corso corso, ResultSet resultSet) throws SQLException {
+        corso.setId(resultSet.getInt("id_corso"));
+        corso.setNome(resultSet.getString("nome_corso"));
+        corso.setDescrizione(resultSet.getString("descrizione"));
+        corso.setCategoria(resultSet.getString("categoria"));
+        corso.setDurata(resultSet.getInt("durata"));
+        corso.setProgramma(resultSet.getString("programma"));
+        corso.setRequisiti(resultSet.getString("requisiti"));
+        corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
+        corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
+        corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
     }
 
     public void deleteCorso(int id) {
@@ -223,8 +205,61 @@ public class CorsoRepository {
         }
     }
 
-    public void iscriviUtente(int idCorso, int idUtente) {
+    public void risultatoTest(int idCorso, int idUtente, int risultatoTest) throws RuntimeException {
         try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE candidature SET risultato_test = ? WHERE id_corso = ? AND id_utente = ?")) {
+                statement.setInt(1, risultatoTest);
+                statement.setInt(2, idCorso);
+                statement.setInt(3, idUtente);
+
+                statement.executeUpdate();
+            }
+
+            int punteggioMinimo = 70;
+            if (risultatoTest < punteggioMinimo) {
+                try (PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
+                    statement.setString(1, StatoCandidatura.bocciato.name());
+                    statement.setInt(2, idCorso);
+                    statement.setInt(3, idUtente);
+
+                    statement.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
+                    statement.setString(1, StatoCandidatura.convocatoColloquio.name());
+                    statement.setInt(2, idCorso);
+                    statement.setInt(3, idUtente);
+
+                    statement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void checkStatoCandidatura(int idCorso, int idUtente, Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT stato_candidatura FROM candidature WHERE id_corso = ? AND id_utente = ?")) {
+            statement.setInt(1, idCorso);
+            statement.setInt(2, idUtente);
+
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String statoCandidatura = resultSet.getString("stato_candidatura");
+                if (!StatoCandidatura.convocatoColloquio.name().equals(statoCandidatura)) {
+                    throw new RuntimeException("L'utente non è stato convocato ad un colloquio");
+                }
+            }
+        }
+    }
+
+    public void accettaUtente(int idCorso, int idUtente) {
+        try (Connection connection = dataSource.getConnection()) {
+            checkStatoCandidatura(idCorso, idUtente, connection);
             try (PreparedStatement statement = connection.prepareStatement(
                     "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
                 statement.setString(1, StatoCandidatura.selezionato.name());
@@ -240,11 +275,12 @@ public class CorsoRepository {
         }
     }
 
-    public void rifiutaUtente(int idCorso, int idUtente) {
+    public void reindirizzaUtente(int idCorso, int idUtente) {
         try (Connection connection = dataSource.getConnection()) {
+            checkStatoCandidatura(idCorso, idUtente, connection);
             try (PreparedStatement statement = connection.prepareStatement(
                     "UPDATE candidature SET stato_candidatura = ? WHERE id_corso = ? AND id_utente = ?")) {
-                statement.setString(1, StatoCandidatura.rifiutato.name());
+                statement.setString(1, StatoCandidatura.reindirizzato.name());
                 statement.setInt(2, idCorso);
                 statement.setInt(3, idUtente);
 
@@ -256,4 +292,6 @@ public class CorsoRepository {
             throw new RuntimeException(e);
         }
     }
+
+
 }
