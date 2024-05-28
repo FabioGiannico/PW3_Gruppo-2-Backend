@@ -37,7 +37,7 @@ public class AuthenticationService {
         // 0. Calcolo dell'hash della password
         String hash = hashCalculator.calculateHash(password);
         // 1. Controllare che esista un utente con gli stessi nome, cognome, hashpassword
-        Optional<Utente> maybeUtente = utenteRepository.findByEmailPasswordHash(email, hash);
+        Optional<Utente> maybeUtente = utenteRepository.findUtenteByEmailPasswordHash(email, hash);
         if (maybeUtente.isPresent()) {
             // 2a. Se combaciano, inserire una nuova sessione per quell'utente
             // 3a. Ritornare il codice sessione

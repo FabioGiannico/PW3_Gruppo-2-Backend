@@ -29,7 +29,15 @@ public class AuthenticationResource {
         this.utenteService = utenteService;
     }
 
+
     // REGISTRA UN NUOVO UTENTE
+    /*    {
+                "nome": "xxxxx",
+                "cognome": "xxxxx",
+                "email": "xxxxx@xxx.it",
+                "password": "xxxxx"
+            }
+    */
     @POST
     @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -38,7 +46,19 @@ public class AuthenticationResource {
         return utenteService.createUtente(request);
     }
 
+
     // FA IL LOGIN
+    /*      {
+                "email": "xxxxxx@xxxxx.it",
+                "password": "xxxxxx"
+            }
+
+            LOGIN DA AMMINISTRATORE
+            {
+                "email": "mario.rossi@example.it",
+                "password": "rossi"
+            }
+    */
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)

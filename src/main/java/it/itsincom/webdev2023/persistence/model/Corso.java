@@ -19,6 +19,7 @@ public class Corso {
     @JsonbDateFormat("yyyy-MM-dd")
     private LocalDate dataFine;
 
+
     // GETTER E SETTER
     public int getId() {
         return id;

@@ -103,17 +103,16 @@ public class CorsoResource {
         corsoRepository.risultatoTest(idCorso, idUtente, risultatoTest.getRisultatoTest());
     }
 
-    //---------------------------------------------
 
     @POST
     @Path("/{idCorso}/candidature")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void candidatiPerCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
+    public void candidaturaCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
         CreateUtenteResponse utente = authenticationService.getProfile(sessionId);
         if (utente == null) {
             throw new RuntimeException("Devi essere loggato per candidarti a un corso");
         }
-        corsoRepository.candidatiPerCorso(utente.getId(), idCorso);
+        corsoRepository.candidaturaCorso(utente.getId(), idCorso);
     }
 
     // TROVA CORSO PER ID

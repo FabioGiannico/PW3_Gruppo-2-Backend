@@ -42,7 +42,7 @@ public class UtenteService {
         u.setEmail(utente.getEmail());
         u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
         u.setPasswordHash(hash);
-        u.setRuolo(utente.getRuolo());
+        u.setRuolo(Ruolo.utente);
 
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
@@ -89,6 +89,11 @@ public class UtenteService {
         return ur;
     }
 
+    public CreateUtenteResponse getUtenteByNome(String nome) {
+        Utente utente = utenteRepository.getUtenteByNome(nome);
 
+        CreateUtenteResponse ur = convertToResponse(utente);
 
+        return ur;
+    }
 }
