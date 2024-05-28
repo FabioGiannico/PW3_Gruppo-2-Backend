@@ -1,6 +1,7 @@
 package it.itsincom.webdev2023.service;
 
 
+import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
@@ -89,6 +90,7 @@ public class UtenteService {
         return ur;
     }
 
-
-
+    public List<Candidatura> getCandidatureByUtenteId(int id) throws SQLException {
+        return utenteRepository.getCandidatureByUtenteId(id);
+    }
 }

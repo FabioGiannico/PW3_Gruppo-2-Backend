@@ -32,6 +32,8 @@ public class CorsoResource {
         return corsoRepository.getAllCorsi();
     }
 
+
+
     // CHIAMATE AMMINISTRATORE
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

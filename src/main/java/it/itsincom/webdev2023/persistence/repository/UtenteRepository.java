@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.persistence.repository;
 
+import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.Utente;
 
@@ -279,6 +280,27 @@ public class UtenteRepository {
                 statement.executeUpdate();
             }
         }
+    }
+
+    public List<Candidatura> getCandidatureByUtenteId(int id) throws SQLException {
+        List<Candidatura> candidature = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM candidature WHERE id_utente = ?")) {
+                statement.setInt(1, id);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    Candidatura candidatura = new Candidatura();
+                    candidatura.setId(resultSet.getInt("id_candidatura"));
+                    candidatura.setIdCorso(resultSet.getInt("id_corso"));
+                    candidatura.setIdUtente(resultSet.getInt("id_utente"));
+                    candidatura.setRisultato(resultSet.getInt("risultato_test"));
+                    candidature.add(candidatura);
+
+                    candidature.add(candidatura);
+                }
+            }
+        }
+        return candidature;
     }
 
 

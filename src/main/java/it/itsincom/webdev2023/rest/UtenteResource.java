@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest;
 
+import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
@@ -57,6 +58,16 @@ public class UtenteResource {
     public CreateUtenteResponse getUtenteById(@PathParam("id") int id) {
         return utenteService.getUtenteById(id);
     }
+
+    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
+    @GET
+    @Path("/{id}/candidature")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Candidatura> getCandidatureByUtenteId(@PathParam("id") int id) throws SQLException {
+        return utenteService.getCandidatureByUtenteId(id);
+    }
+
+
 /*
     // MODIFICA LE INFO DI UN UTENTE SOLO SE E' IL SUO PROFILO
     @PUT
