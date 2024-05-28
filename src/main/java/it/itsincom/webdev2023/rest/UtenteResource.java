@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest;
 
+import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
@@ -8,11 +9,14 @@ import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
+import jakarta.json.bind.adapter.JsonbAdapter;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Path("/api/utenti")
@@ -30,8 +34,6 @@ public class UtenteResource {
         this.authenticationService = authenticationService;
     }
 
-
-
     // OTTIENE LA LISTA DEGLI UTENTI
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -39,7 +41,7 @@ public class UtenteResource {
         return utenteService.getAllUtenti();
     }
 
-    // ELIMINA UTENTI ED INSEGNANTI (SOLO SE SI E' AMMINISTRATORI)
+    //SOLO L'AMMINISTRATORE ELIMINA DALLA TABELLE UTENTI GLI INSEGNANTI E GLI UTENTI
     @DELETE
     @Path("/{id}")
     public Response deleteUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
@@ -51,7 +53,7 @@ public class UtenteResource {
         return Response.ok().build();
     }
 
-    // OTTIENE L'UTENTE TRAMITE ID
+    // OTTIENE L'UTENTE
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +91,17 @@ public class UtenteResource {
     "dataNascita" : "xxxx-xx-xx"
 }
      */
+    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
+    @GET
+    @Path("/{id}/candidature")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Candidatura> getCandidatureByUtenteId(@PathParam("id") int id) throws SQLException {
+        return utenteService.getCandidatureByUtenteId(id);
+    }
+
+
+
+    // MODIFICA LE INFO DI UN UTENTE SOLO SE E' IL SUO PROFILO
     @PUT
     @Path("/profile/modify")
     @Consumes(MediaType.APPLICATION_JSON)

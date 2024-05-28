@@ -1,6 +1,7 @@
 package it.itsincom.webdev2023.service;
 
 
+import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
@@ -42,7 +43,7 @@ public class UtenteService {
         u.setEmail(utente.getEmail());
         u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
         u.setPasswordHash(hash);
-        u.setRuolo(Ruolo.utente);
+        u.setRuolo(utente.getRuolo());
 
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
@@ -89,6 +90,9 @@ public class UtenteService {
         return ur;
     }
 
+    public List<Candidatura> getCandidatureByUtenteId(int id) throws SQLException {
+        return utenteRepository.getCandidatureByUtenteId(id);
+    }
     public CreateUtenteResponse getUtenteByNome(String nome) {
         Utente utente = utenteRepository.getUtenteByNome(nome);
 
