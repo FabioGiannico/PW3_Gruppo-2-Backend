@@ -22,7 +22,7 @@ public class SessionRepository {
     public int insertSession(int idPartecipante) throws SQLException {
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO session (partecipanti_id) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO session (utente_id) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setInt(1, idPartecipante);
                 statement.executeUpdate();
                 ResultSet generatedKeys = statement.getGeneratedKeys();

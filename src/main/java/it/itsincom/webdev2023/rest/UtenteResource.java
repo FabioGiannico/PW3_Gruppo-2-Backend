@@ -57,7 +57,7 @@ public class UtenteResource {
     public CreateUtenteResponse getUtenteById(@PathParam("id") int id) {
         return utenteService.getUtenteById(id);
     }
-
+/*
     // MODIFICA LE INFO DI UN UTENTE SOLO SE E' IL SUO PROFILO
     @PUT
     @Path("/profile/modify")
@@ -88,5 +88,5 @@ public class UtenteResource {
         utenteRepository.setIndirizzo(idUtente, indirizzo);
         // DATA DI NASCITA
         utenteRepository.setDataNascita(idUtente, Date.valueOf(dataNascita));
-    }
+    }*/
 }
