@@ -7,6 +7,7 @@ import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
+import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -93,6 +94,11 @@ public class UtenteService {
     public List<CreateCandidaturaResponse> getCandidatureUtenteById(int id) throws SQLException {
         return utenteRepository.getCandidatureUtenteById(id);
     }
+
+    public List<CreateColloquioResponse> getColloquiUtenteById(int id) throws SQLException {
+        return utenteRepository.getColloquiUtenteById(id);
+    }
+
     public CreateUtenteResponse getUtenteByNome(String nome) {
         Utente utente = utenteRepository.getUtenteByNome(nome);
 

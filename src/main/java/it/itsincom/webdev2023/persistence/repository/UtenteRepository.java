@@ -1,9 +1,11 @@
 package it.itsincom.webdev2023.persistence.repository;
 
+import it.itsincom.webdev2023.persistence.model.Esito;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
+import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
 import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
 import it.itsincom.webdev2023.service.HashCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -218,6 +220,34 @@ public class UtenteRepository {
             throw new RuntimeException(e);
         }
         return listaCandidature;
+    }
+
+    // OTTIENE I COLLOQUI DI UN UTENTE
+    public List<CreateColloquioResponse> getColloquiUtenteById(int idCandidatura) throws SQLException {
+        List<CreateColloquioResponse> listaColloqui = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_candidatura, id_insegnante, data_colloquio, ora_colloquio, luogo_colloquio, esito_colloquio FROM colloqui WHERE id_candidatura = ?")) {
+                statement.setInt(1, idCandidatura);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        CreateColloquioResponse colloquio = new CreateColloquioResponse();
+                        colloquio.setIdCandidatura(resultSet.getInt("id_candidatura"));
+                        colloquio.setIdInsegnante(resultSet.getInt("id_insegnante"));
+                        colloquio.setData(resultSet.getDate("data_colloquio"));
+                        colloquio.setOrario(resultSet.getTime("ora_colloquio"));
+                        colloquio.setLuogo(resultSet.getString("luogo_colloquio"));
+                        colloquio.setEsito(Esito.valueOf(resultSet.getString("esito_colloquio")));
+
+                        listaColloqui.add(colloquio);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listaColloqui;
     }
 
     // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI

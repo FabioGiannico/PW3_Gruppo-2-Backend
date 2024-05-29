@@ -4,6 +4,7 @@ import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
 import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
+import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
 import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
@@ -30,9 +31,10 @@ public class UtenteResource {
     }
 
     // OTTIENE LA LISTA DEGLI UTENTI
+    // TODO: SOLO AMMINISTRATORE
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CreateUtenteResponse> getAllUtenti() {
+    public List<CreateUtenteResponse> getAllUtenti(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) {
         return utenteService.getAllUtenti();
     }
 
@@ -71,6 +73,14 @@ public class UtenteResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<CreateCandidaturaResponse> getCandidatureUtenteById(@PathParam("id") int id) throws SQLException {
         return utenteService.getCandidatureUtenteById(id);
+    }
+
+    //OTTIENE I COLLOQUI DI UN UTENTE SPECIFICO
+    @GET
+    @Path("/{id}/colloqui")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CreateColloquioResponse> getColloquiUtenteById(@PathParam("id") int id) throws SQLException {
+        return utenteService.getColloquiUtenteById(id);
     }
 
 
