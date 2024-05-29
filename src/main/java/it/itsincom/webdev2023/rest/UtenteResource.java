@@ -99,7 +99,7 @@ public class UtenteResource {
     "dataNascita" : "xxxx-xx-xx"
 }
      */
-    @PUT
+    @PATCH
     @Path("/profile/modify")
     @Consumes(MediaType.APPLICATION_JSON)
     public void modificaInfo(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, CreateModifyRequest modify) throws SQLException {

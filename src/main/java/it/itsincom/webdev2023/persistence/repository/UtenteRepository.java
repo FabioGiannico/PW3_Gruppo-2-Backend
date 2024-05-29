@@ -281,19 +281,44 @@ public class UtenteRepository {
     }
 */
 
-    // TODO: CONTROLLA CHE L'INDIRIZZO NON SIA UTILIZZATO GIA' DA QUALCUNO. SE SI' NON ELIMINARLO, ALTRIMENTI FAI UPDATE DELLA ROW
-    public void modificaInfo(int idUtente, CreateModifyRequest req) {
+    public void modificaInfo(int idUtente, CreateModifyRequest req) throws SQLException {
+        StringBuilder query = new StringBuilder("UPDATE utenti SET ");
+        List<Object> parameters = new ArrayList<>();
+
+        if (req.getNome() != null) {
+            query.append("nome = ?, ");
+            parameters.add(req.getNome());
+        }
+        if (req.getCognome() != null) {
+            query.append("cognome = ?, ");
+            parameters.add(req.getCognome());
+        }
+        if (req.getEmail() != null) {
+            query.append("email = ?, ");
+            parameters.add(req.getEmail());
+        }
+        if (req.getTelefono() != null) {
+            query.append("telefono = ?, ");
+            parameters.add(req.getTelefono());
+        }
+        if (req.getDataNascita() != null) {
+            query.append("data_nascita = ?, ");
+            parameters.add(req.getDataNascita());
+        }
+        if (req.getIndirizzo() != null) {
+            query.append("id_indirizzo = ?, ");
+            parameters.add(setIndirizzo(req));
+        }
+
+        query.setLength(query.length() - 2);
+        query.append(" WHERE id_utente = ?");
+        parameters.add(idUtente);
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET nome = ?, cognome = ?, email = ?, telefono = ?, data_nascita = ?, id_indirizzo = ? WHERE id_utente = ?")) {
-                statement.setString(1, req.getNome());
-                statement.setString(2, req.getCognome());
-                statement.setString(3, req.getEmail());
-                statement.setString(4, req.getTelefono());
-                statement.setDate(5, req.getDataNascita());
-                statement.setInt(6, setIndirizzo(req));
-                statement.setInt(7, idUtente);
-
+            try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+                for (int i = 0; i < parameters.size(); i++) {
+                    statement.setObject(i + 1, parameters.get(i));
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
