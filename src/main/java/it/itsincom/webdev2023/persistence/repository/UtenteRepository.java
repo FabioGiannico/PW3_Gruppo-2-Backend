@@ -2,6 +2,7 @@ package it.itsincom.webdev2023.persistence.repository;
 
 import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
+import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
 
 import it.itsincom.webdev2023.service.HashCalculator;
@@ -294,6 +295,7 @@ public class UtenteRepository {
                     candidatura.setIdCorso(resultSet.getInt("id_corso"));
                     candidatura.setIdUtente(resultSet.getInt("id_utente"));
                     candidatura.setRisultato(resultSet.getInt("risultato_test"));
+                    candidatura.setStato(StatoCandidatura.valueOf(resultSet.getString("stato_candidatura")));
                     candidature.add(candidatura);
 
                     candidature.add(candidatura);
