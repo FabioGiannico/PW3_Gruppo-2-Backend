@@ -1,22 +1,17 @@
 package it.itsincom.webdev2023.rest;
 
-import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
+import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
 import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
-import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
-import jakarta.json.bind.adapter.JsonbAdapter;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Path("/api/utenti")
@@ -65,18 +60,21 @@ public class UtenteResource {
     @GET
     @Path("/find/{nome}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse getUtenteById(@PathParam("nome") String nome) {
+    public CreateUtenteResponse getUtenteByNome(@PathParam("nome") String nome) {
         return utenteService.getUtenteByNome(nome);
     }
 
 
+    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
+    @GET
+    @Path("/{id}/candidature")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CreateCandidaturaResponse> getCandidatureUtenteById(@PathParam("id") int id) throws SQLException {
+        return utenteService.getCandidatureUtenteById(id);
+    }
 
 
-
-
-
-
-    // MODIFICA LE INFO DEL PROFILO CONTROLLANDO L'ID DELL'UTENTE
+// MODIFICA LE INFO DEL PROFILO CONTROLLANDO L'ID DELL'UTENTE
 
     /*
 {
@@ -91,17 +89,6 @@ public class UtenteResource {
     "dataNascita" : "xxxx-xx-xx"
 }
      */
-    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
-    @GET
-    @Path("/{id}/candidature")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Candidatura> getCandidatureByUtenteId(@PathParam("id") int id) throws SQLException {
-        return utenteService.getCandidatureByUtenteId(id);
-    }
-
-
-
-    // MODIFICA LE INFO DI UN UTENTE SOLO SE E' IL SUO PROFILO
     @PUT
     @Path("/profile/modify")
     @Consumes(MediaType.APPLICATION_JSON)

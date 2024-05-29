@@ -6,6 +6,7 @@ import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
+import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,7 +44,6 @@ public class UtenteService {
         u.setEmail(utente.getEmail());
         u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
         u.setPasswordHash(hash);
-        u.setRuolo(utente.getRuolo());
 
         // 4. Salvare l'oggetto utente nel database
         Utente creato = utenteRepository.createUtente(u);
@@ -90,8 +90,8 @@ public class UtenteService {
         return ur;
     }
 
-    public List<Candidatura> getCandidatureByUtenteId(int id) throws SQLException {
-        return utenteRepository.getCandidatureByUtenteId(id);
+    public List<CreateCandidaturaResponse> getCandidatureUtenteById(int id) throws SQLException {
+        return utenteRepository.getCandidatureUtenteById(id);
     }
     public CreateUtenteResponse getUtenteByNome(String nome) {
         Utente utente = utenteRepository.getUtenteByNome(nome);

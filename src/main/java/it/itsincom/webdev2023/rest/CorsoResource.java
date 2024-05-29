@@ -25,7 +25,7 @@ public class CorsoResource {
         this.authenticationService = authenticationService;
     }
 
-    // http://localhost:8080/corsi?categoria=DEV
+    // OTTIENE TUTTI I CORSI
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Corso> getAllCorsi(@QueryParam("categoria") String categoria) throws SQLException {
@@ -34,7 +34,20 @@ public class CorsoResource {
 
 
 
-    // CHIAMATE AMMINISTRATORE
+    // CREA UN CORSO
+    /*
+{
+    "nome": "xxx",
+    "descrizione": "xxx",
+    "categoria": "xxx",
+    "durata": xxx,
+    "programma": "xxx",
+    "requisiti":  "xxx",
+    "postiDisponibili": xxx,
+    "dataInizio": "xxxx-xx-xx",
+    "dataFine": "xxxx-xx-xx"
+}
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -59,6 +72,7 @@ public class CorsoResource {
         return Response.ok().build();
     }
 
+    // TODO: FINIRE
     @GET
     @Path("/{idCorso}/candidature")
     @Produces(MediaType.APPLICATION_JSON)
@@ -66,11 +80,20 @@ public class CorsoResource {
         return corsoRepository.getAllCandidature();
     }
 
+    // TROVA UN CORSO TRAMITE CATEGORIA
     @GET
     @Path("/categoria/{nomeCategoria}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Corso> getCorsiPerCategoria(@PathParam("nomeCategoria") String nomeCategoria) throws SQLException {
         return corsoRepository.cercaCorsiPerCategoria(nomeCategoria);
+    }
+
+    // TROVA UN CORSO TRAMITE ID
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Corso getCorsoById(@PathParam("id") int id) throws SQLException {
+        return corsoRepository.getCorsoById(id);
     }
 
     //CAMBIARE LO STATO DELL'UTENTE DA CANDIDATO A ISCRITTO
@@ -105,7 +128,7 @@ public class CorsoResource {
         corsoRepository.risultatoTest(idCorso, idUtente, risultatoTest.getRisultatoTest());
     }
 
-
+    // CANDIDATI AD UN CORSO
     @POST
     @Path("/{idCorso}/candidature")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -117,12 +140,6 @@ public class CorsoResource {
         corsoRepository.candidaturaCorso(utente.getId(), idCorso);
     }
 
-    // TROVA CORSO PER ID
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Corso getCorsoById(@PathParam("id") int id) throws SQLException {
-        return corsoRepository.getCorsoById(id);
-    }
+
 
 }
