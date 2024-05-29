@@ -1,14 +1,15 @@
 package it.itsincom.webdev2023.persistence.repository;
 
+import it.itsincom.webdev2023.persistence.model.Esito;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
+import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import it.itsincom.webdev2023.persistence.model.Utente;
-
+import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
+import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
 import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
-import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.service.HashCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class UtenteRepository {
                 statement.setString(3, utente.getCognome());
                 statement.setString(4, utente.getEmail());
                 statement.setString(5, utente.getPasswordHash());
-                statement.setString(6, utente.getRuolo().name());
+                statement.setString(6, "utente");
                 statement.executeUpdate();
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {
@@ -195,9 +196,64 @@ public class UtenteRepository {
         return null;
     }
 
+    // OTTIENE LE CANDIDATURE DI UN UTENTE
+    public List<CreateCandidaturaResponse> getCandidatureUtenteById(int idUtente) throws SQLException {
+        List<CreateCandidaturaResponse> listaCandidature = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_corso, data_candidatura, stato_candidatura, risultato_test FROM candidature WHERE id_utente = ?")) {
+                statement.setInt(1, idUtente);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        CreateCandidaturaResponse candidatura = new CreateCandidaturaResponse();
+                        candidatura.setIdCorso(resultSet.getInt("id_corso"));
+                        candidatura.setData(resultSet.getTimestamp("data_candidatura"));
+                        candidatura.setStato(StatoCandidatura.valueOf(resultSet.getString("stato_candidatura")));
+                        candidatura.setRisultato(resultSet.getInt("risultato_test"));
+
+                        listaCandidature.add(candidatura);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listaCandidature;
+    }
+
+    // OTTIENE I COLLOQUI DI UN UTENTE
+    public List<CreateColloquioResponse> getColloquiUtenteById(int idCandidatura) throws SQLException {
+        List<CreateColloquioResponse> listaColloqui = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_candidatura, id_insegnante, data_colloquio, ora_colloquio, luogo_colloquio, esito_colloquio FROM colloqui WHERE id_candidatura = ?")) {
+                statement.setInt(1, idCandidatura);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        CreateColloquioResponse colloquio = new CreateColloquioResponse();
+                        colloquio.setIdCandidatura(resultSet.getInt("id_candidatura"));
+                        colloquio.setIdInsegnante(resultSet.getInt("id_insegnante"));
+                        colloquio.setData(resultSet.getDate("data_colloquio"));
+                        colloquio.setOrario(resultSet.getTime("ora_colloquio"));
+                        colloquio.setLuogo(resultSet.getString("luogo_colloquio"));
+                        colloquio.setEsito(Esito.valueOf(resultSet.getString("esito_colloquio")));
+
+                        listaColloqui.add(colloquio);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listaColloqui;
+    }
+
     // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
     // CON UN CICLO FOR OTTIENE OGNI UTENTE TRAMITE IL SUO ID
-    public List<Utente> getListaUtentiByIdCorso(int idCorso) throws SQLException {
+    /*
+    public List<CreateCandidaturaResponse> getListaUtentiByIdCorso(int idCorso) throws SQLException {
         List<Utente> listaUtenti = new ArrayList<>();
         List<Integer> listaId = corsoRepository.getListaIdUtentiPerCorso(idCorso);
 
@@ -223,7 +279,7 @@ public class UtenteRepository {
         }
         return listaUtenti;
     }
-
+*/
 
     // TODO: CONTROLLA CHE L'INDIRIZZO NON SIA UTILIZZATO GIA' DA QUALCUNO. SE SI' NON ELIMINARLO, ALTRIMENTI FAI UPDATE DELLA ROW
     public void modificaInfo(int idUtente, CreateModifyRequest req) {
