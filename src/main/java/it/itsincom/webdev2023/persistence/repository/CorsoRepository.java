@@ -4,6 +4,7 @@ import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Corso;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import jakarta.enterprise.context.ApplicationScoped;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class CorsoRepository {
             }
         }
         if (corsi.isEmpty()) {
-            throw new SQLException("Categoria " + categoria + " non trovata" );
+            throw new SQLException("Categoria " + categoria + " non trovata");
         }
         return corsi;
     }
@@ -108,7 +109,7 @@ public class CorsoRepository {
     }
 
     // OTTIENE TUTTE LE CANDIDATURE PRESENTI
-        public List<Candidatura> getAllCandidature() throws SQLException {
+    public List<Candidatura> getAllCandidature() throws SQLException {
         List<Candidatura> candidature = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
@@ -163,7 +164,7 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT nome_corso, descrizione, categoria, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE id_corso = ?")) {
+                    "SELECT id_corso, nome_corso, descrizione, categoria, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE id_corso = ?")) {
                 statement.setInt(1, id);
                 var resultSet = statement.executeQuery();
 
