@@ -1,11 +1,12 @@
 package it.itsincom.webdev2023.persistence.model;
 
 public class Indirizzo {
+
     private int id;
     private String indirizzoResidenza;
     private String citta;
     private String provincia;
-    private int cap;
+    private String cap;
 
 
     // GETTER E SETTER
@@ -41,11 +42,11 @@ public class Indirizzo {
         this.provincia = provincia;
     }
 
-    public int getCap() {
+    public String getCap() {
         return cap;
     }
 
-    public void setCap(int cap) {
+    public void setCap(String cap) {
         this.cap = cap;
     }
 }

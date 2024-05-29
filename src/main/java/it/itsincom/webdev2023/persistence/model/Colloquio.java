@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.util.Date;
 
 public class Colloquio {
+
     private int id;
     private int idCandidatura;
     private int idInsegnante;

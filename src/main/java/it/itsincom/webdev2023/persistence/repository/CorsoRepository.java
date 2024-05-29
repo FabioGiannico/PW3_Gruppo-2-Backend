@@ -4,7 +4,6 @@ import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Corso;
 import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
 import jakarta.enterprise.context.ApplicationScoped;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,13 +38,11 @@ public class CorsoRepository {
 
                 statement.executeUpdate();
 
-
                 try (var rs = statement.getGeneratedKeys()) {
                     if (rs.next()) {
                         corso.setId(rs.getInt(1));
                     }
                 }
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -64,7 +61,7 @@ public class CorsoRepository {
 
                 while (resultSet.next()) {
                     var corso = new Corso();
-                    corsoConnection(corso, resultSet);
+                    setCorso(corso, resultSet);
                     corsi.add(corso);
                 }
             }
@@ -72,29 +69,31 @@ public class CorsoRepository {
         return corsi;
     }
 
-    public List<Corso> cercaCorsiPerCategoria(String nomeCategoria) throws SQLException {
+    // TROVA I CORSI DU UNA CERTA CATEGORIA
+    public List<Corso> cercaCorsiPerCategoria(String categoria) throws SQLException {
         List<Corso> corsi = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM corsi WHERE categoria = ?")) {
-                statement.setString(1, nomeCategoria);
+                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE categoria = ?")) {
+                statement.setString(1, categoria);
                 var resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
                     Corso corso = new Corso();
-                    corsoConnection(corso, resultSet);
+                    setCorso(corso, resultSet);
                     corsi.add(corso);
                 }
             }
         }
         if (corsi.isEmpty()) {
-            throw new SQLException("Categoria non trovata: " + nomeCategoria);
+            throw new SQLException("Categoria " + categoria + " non trovata" );
         }
         return corsi;
     }
 
-    public void candidatiPerCorso(int idUtente, int idCorso) throws SQLException {
+    // CANDIDA UN UTENTE AD UN CORSO
+    public void candidaturaCorso(int idUtente, int idCorso) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO candidature (id_utente, id_corso, data_candidatura, stato_candidatura) VALUES (?, ?, ?, ?)")) {
@@ -108,7 +107,8 @@ public class CorsoRepository {
         }
     }
 
-    public List<Candidatura> getAllCandidature() throws SQLException {
+    // OTTIENE TUTTE LE CANDIDATURE PRESENTI
+        public List<Candidatura> getAllCandidature() throws SQLException {
         List<Candidatura> candidature = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
@@ -118,7 +118,6 @@ public class CorsoRepository {
 
                 while (resultSet.next()) {
                     var candidatura = new Candidatura();
-
                     candidatura.setIdUtente(resultSet.getInt("id_utente"));
                     candidatura.setIdCorso(resultSet.getInt("id_corso"));
                     candidatura.setData(Timestamp.valueOf(resultSet.getTimestamp("data_candidatura").toLocalDateTime()));
@@ -130,7 +129,6 @@ public class CorsoRepository {
         }
         return candidature;
     }
-
 
     // OTTIENE LA LISTA DEGLI ID DEGLI UTENTI CANDIDATI AD UN DETERMINATO CORSO
     public List<Integer> getListaIdUtentiPerCorso(int idCorso) throws SQLException {
@@ -159,38 +157,26 @@ public class CorsoRepository {
         return listaIdUtenti;
     }
 
+    // OTTIENE IL CORSO TRAMITE IL SUO ID
     public Corso getCorsoById(int id) throws SQLException {
         Corso corso = null;
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM corsi WHERE id_corso = ?")) {
+                    "SELECT nome_corso, descrizione, categoria, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE id_corso = ?")) {
                 statement.setInt(1, id);
                 var resultSet = statement.executeQuery();
 
                 if (resultSet.next()) {
                     corso = new Corso();
-                    corsoConnection(corso, resultSet);
+                    setCorso(corso, resultSet);
                 }
             }
         }
-
         return corso;
     }
 
-    private void corsoConnection(Corso corso, ResultSet resultSet) throws SQLException {
-        corso.setId(resultSet.getInt("id_corso"));
-        corso.setNome(resultSet.getString("nome_corso"));
-        corso.setDescrizione(resultSet.getString("descrizione"));
-        corso.setCategoria(resultSet.getString("categoria"));
-        corso.setDurata(resultSet.getInt("durata"));
-        corso.setProgramma(resultSet.getString("programma"));
-        corso.setRequisiti(resultSet.getString("requisiti"));
-        corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
-        corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
-        corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
-    }
-
+    // ELIMINA UN CORSO
     public void deleteCorso(int id) {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
@@ -205,6 +191,7 @@ public class CorsoRepository {
         }
     }
 
+    // IMPOSTA IL RISULTATO DEL TEST DELL'UTENTE E MODIFICA LO STATO DELLA CANDIDATURA
     public void risultatoTest(int idCorso, int idUtente, int risultatoTest) throws RuntimeException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
@@ -241,6 +228,7 @@ public class CorsoRepository {
         }
     }
 
+    // OTTIENE LO STATO DELLA CANDIDATURA
     private void checkStatoCandidatura(int idCorso, int idUtente, Connection connection) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT stato_candidatura FROM candidature WHERE id_corso = ? AND id_utente = ?")) {
@@ -257,6 +245,7 @@ public class CorsoRepository {
         }
     }
 
+    // ACCETTA LA CANDIDATURA DI UN UTENTE
     public void accettaUtente(int idCorso, int idUtente) {
         try (Connection connection = dataSource.getConnection()) {
             checkStatoCandidatura(idCorso, idUtente, connection);
@@ -275,6 +264,7 @@ public class CorsoRepository {
         }
     }
 
+    // REINDIRIZZA LA CANDIDATURA DI UN UTENTE
     public void reindirizzaUtente(int idCorso, int idUtente) {
         try (Connection connection = dataSource.getConnection()) {
             checkStatoCandidatura(idCorso, idUtente, connection);
@@ -294,4 +284,16 @@ public class CorsoRepository {
     }
 
 
+    private void setCorso(Corso corso, ResultSet resultSet) throws SQLException {
+        corso.setId(resultSet.getInt("id_corso"));
+        corso.setNome(resultSet.getString("nome_corso"));
+        corso.setDescrizione(resultSet.getString("descrizione"));
+        corso.setCategoria(resultSet.getString("categoria"));
+        corso.setDurata(resultSet.getInt("durata"));
+        corso.setProgramma(resultSet.getString("programma"));
+        corso.setRequisiti(resultSet.getString("requisiti"));
+        corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
+        corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
+        corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
+    }
 }

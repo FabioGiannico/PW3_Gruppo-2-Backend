@@ -19,10 +19,12 @@ public class SessionRepository {
         this.dataSource = dataSource;
     }
 
+
+    // CREA UNA NUOVO SESSIONE
     public int insertSession(int idPartecipante) throws SQLException {
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO session (utente_id) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO sessioni (id_utente) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setInt(1, idPartecipante);
                 statement.executeUpdate();
                 ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -36,11 +38,11 @@ public class SessionRepository {
         throw new SQLException("Cannot insert new session for partecipante" + idPartecipante);
     }
 
+    // ELIMINA UNA SESSIONE
     public void delete(int sessionId) {
-
         try {
             try (Connection connection = dataSource.getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement("DELETE FROM session WHERE id = ?")) {
+                try (PreparedStatement statement = connection.prepareStatement("DELETE FROM sessioni WHERE id_sessione = ?")) {
                     statement.setInt(1, sessionId);
                     statement.executeUpdate();
                 }
@@ -50,16 +52,17 @@ public class SessionRepository {
         }
     }
 
+    // OTTINE LA SESSIONE TRAMITE L'ID
     public Sessione getSessionById(int sessionId) {
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT id, utente_id, data_creazione FROM session WHERE id = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_sessione, id_utente, data_creazione FROM sessioni WHERE id_sessione = ?")) {
                 statement.setInt(1, sessionId);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     var sessione = new Sessione();
-                    sessione.setId(rs.getInt("id"));
-                    sessione.setPartecipanteId(rs.getInt("utente_id"));
+                    sessione.setId(rs.getInt("id_sessione"));
+                    sessione.setPartecipanteId(rs.getInt("id_utente"));
                     sessione.setDataCreazione(rs.getTimestamp("data_creazione"));
                     return sessione;
                 }
@@ -70,15 +73,15 @@ public class SessionRepository {
         throw new RuntimeException("non è presente alcuna sessione con id" + sessionId);
     }
 
+    // OTTIENE L'ID DELL'UTENTE TRAMITE L'ID DELLA SESSIONE
     public int getIdBySession(int sessionCookie) throws SQLException {
         ResultSet rs;
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT partecipanti_id FROM session WHERE id_session = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente FROM sessioni WHERE id_sessione = ?")) {
                 statement.setInt(1, sessionCookie);
                 rs = statement.executeQuery();
-
                 while (rs.next()) {
-                    return rs.getInt("partecipanti_id");
+                    return rs.getInt("id_utente");
                 }
             }
         } catch (SQLException e) {

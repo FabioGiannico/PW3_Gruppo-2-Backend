@@ -4,6 +4,8 @@ import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
+import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
+import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
@@ -59,6 +61,36 @@ public class UtenteResource {
         return utenteService.getUtenteById(id);
     }
 
+    // TROVA UN UTENTE PER NOME
+    @GET
+    @Path("/find/{nome}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CreateUtenteResponse getUtenteById(@PathParam("nome") String nome) {
+        return utenteService.getUtenteByNome(nome);
+    }
+
+
+
+
+
+
+
+
+    // MODIFICA LE INFO DEL PROFILO CONTROLLANDO L'ID DELL'UTENTE
+
+    /*
+{
+    "nome": "xxxx",
+    "cognome": "xxxx",
+    "email": "xx@xxxxx.it",
+    "telefono": "xxxxxxxxxx",
+    "indirizzo": "xxx xxxxx",
+    "citta": "xxxxxxx",
+    "provincia": "XX",
+    "cap": "xxxxx",
+    "dataNascita" : "xxxx-xx-xx"
+}
+     */
     //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
     @GET
     @Path("/{id}/candidature")
@@ -68,36 +100,14 @@ public class UtenteResource {
     }
 
 
-/*
+
     // MODIFICA LE INFO DI UN UTENTE SOLO SE E' IL SUO PROFILO
     @PUT
     @Path("/profile/modify")
-    @Produces(MediaType.APPLICATION_JSON)
-    public void modificaInfo(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId,
-                               String nome,
-                               String cognome,
-                               String email,
-                               String password,
-                               String telefono,
-                               String indirizzo,
-                               String dataNascita
-                            ) throws SQLException {
-
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void modificaInfo(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, CreateModifyRequest modify) throws SQLException {
         int idUtente = sessionRepository.getIdBySession(sessionId);
+        utenteRepository.modificaInfo(idUtente, modify);
+    }
 
-        // NOME
-        utenteRepository.setNome(idUtente, nome);
-        // COGNOME
-        utenteRepository.setCognome(idUtente, cognome);
-        // EMAIL
-        utenteRepository.setEmail(idUtente, email);
-        // PSW
-        utenteRepository.setPassword(idUtente, password);
-        // TELEFONO
-        utenteRepository.setTelefono(idUtente, telefono);
-        // INDIRIZZO
-        utenteRepository.setIndirizzo(idUtente, indirizzo);
-        // DATA DI NASCITA
-        utenteRepository.setDataNascita(idUtente, Date.valueOf(dataNascita));
-    }*/
 }

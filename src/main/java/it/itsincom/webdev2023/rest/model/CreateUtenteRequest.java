@@ -4,21 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import jakarta.ws.rs.FormParam;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class CreateUtenteRequest {
 
     private String nome;
-
     private String cognome;
-
     private String email;
-
     private String password;
-
     private Timestamp registrazione = new Timestamp(System.currentTimeMillis());
 
-    private Ruolo ruolo;
 
     public String getNome() {
         return nome;
@@ -58,13 +54,5 @@ public class CreateUtenteRequest {
 
     public void setRegistrazione(Timestamp registrazione) {
         this.registrazione = registrazione;
-    }
-
-    public Ruolo getRuolo() {
-        return ruolo;
-    }
-
-    public void setRuolo(Ruolo ruolo) {
-        this.ruolo = ruolo;
     }
 }

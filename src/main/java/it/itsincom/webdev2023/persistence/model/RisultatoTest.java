@@ -4,6 +4,8 @@ public class RisultatoTest {
 
     private int risultatoTest;
 
+
+    // GETTER E SETTER
     public int getRisultatoTest() {
         return risultatoTest;
     }

@@ -93,4 +93,11 @@ public class UtenteService {
     public List<Candidatura> getCandidatureByUtenteId(int id) throws SQLException {
         return utenteRepository.getCandidatureByUtenteId(id);
     }
+    public CreateUtenteResponse getUtenteByNome(String nome) {
+        Utente utente = utenteRepository.getUtenteByNome(nome);
+
+        CreateUtenteResponse ur = convertToResponse(utente);
+
+        return ur;
+    }
 }

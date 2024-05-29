@@ -8,6 +8,8 @@ public class Sessione {
     private Timestamp dataCreazione;
     private int partecipanteId;
 
+
+    // GETTER E SETTER
     public int getId() {
         return id;
     }

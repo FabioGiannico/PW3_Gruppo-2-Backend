@@ -1,9 +1,12 @@
 package it.itsincom.webdev2023.persistence.model;
 
 public class Categoria {
+
     private int id;
     private String nome;
 
+
+    // GETTER E SETTER
     public int getId() {
         return id;
     }
