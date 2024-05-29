@@ -44,6 +44,9 @@ public class UtenteService {
         u.setCognome(utente.getCognome());
         u.setEmail(utente.getEmail());
         u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
+        u.setRuolo( Ruolo.valueOf(utente.getRuolo()));
+    //set ruolo
+
         u.setPasswordHash(hash);
 
         // 4. Salvare l'oggetto utente nel database
@@ -54,6 +57,7 @@ public class UtenteService {
         response.setId(creato.getId());
         response.setNome(creato.getNome());
         response.setCognome(creato.getCognome());
+        response.setRuolo(creato.getRuolo());
 
         // 6. Restituire CreateUtenteResponse
         return response;

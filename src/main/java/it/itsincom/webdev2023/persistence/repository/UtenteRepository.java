@@ -47,7 +47,7 @@ public class UtenteRepository {
                 statement.setString(3, utente.getCognome());
                 statement.setString(4, utente.getEmail());
                 statement.setString(5, utente.getPasswordHash());
-                statement.setString(6, "utente");
+                statement.setString(6, utente.getRuolo().name());
                 statement.executeUpdate();
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {

@@ -13,8 +13,16 @@ public class CreateUtenteRequest {
     private String cognome;
     private String email;
     private String password;
+    private String ruolo;
     private Timestamp registrazione = new Timestamp(System.currentTimeMillis());
 
+    public String getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(String ruolo) {
+        this.ruolo = ruolo;
+    }
 
     public String getNome() {
         return nome;
