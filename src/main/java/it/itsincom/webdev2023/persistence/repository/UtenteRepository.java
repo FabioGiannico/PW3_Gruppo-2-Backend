@@ -285,6 +285,7 @@ public class UtenteRepository {
         StringBuilder query = new StringBuilder("UPDATE utenti SET ");
         List<Object> parameters = new ArrayList<>();
 
+
         if (req.getNome() != null) {
             query.append("nome = ?, ");
             parameters.add(req.getNome());
@@ -301,10 +302,14 @@ public class UtenteRepository {
             query.append("telefono = ?, ");
             parameters.add(req.getTelefono());
         }
+
         if (req.getDataNascita() != null) {
             query.append("data_nascita = ?, ");
             parameters.add(req.getDataNascita());
+        } else {
+            query.append("data_nascita = NULL, ");
         }
+
         if (req.getIndirizzo() != null) {
             query.append("id_indirizzo = ?, ");
             parameters.add(setIndirizzo(req));
@@ -325,7 +330,6 @@ public class UtenteRepository {
             throw new RuntimeException(e);
         }
     }
-
 
     // SELEZIONA L'INDIRIZZO: ESISTE => RETURN ID  /  NON ESISTE => RETURN -1
     public int getIdIndirizzo(CreateModifyRequest indirizzo) {
