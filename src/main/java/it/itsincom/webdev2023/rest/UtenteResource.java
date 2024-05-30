@@ -57,7 +57,7 @@ public class UtenteResource {
     public CreateProfileResponse getUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
         CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
-            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+            throw new RuntimeException("Non sei autorizzato a visualizzare un utente");
         }
         return utenteRepository.getUtenteById(id);
     }
@@ -69,34 +69,52 @@ public class UtenteResource {
     public CreateProfileResponse getUtenteByNome(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("nome") String nome) {
         CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
-            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+            throw new RuntimeException("Non sei autorizzato a cercare un utente");
         }
         return utenteRepository.getUtenteByNome(nome);
     }
 
 
-    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO
+    //OTTIENE LE CANDIDATURE DI UN UTENTE SPECIFICO (METODO AMMINISTRATORE)
     @GET
     @Path("/{id}/candidature")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CreateCandidaturaResponse> getCandidatureUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) throws SQLException {
         CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
-            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+            throw new RuntimeException("Non sei autorizzato a visualizzare le candidature di un utente");
         }
         return utenteRepository.getCandidatureUtenteById(id);
     }
 
-    //OTTIENE I COLLOQUI DI UN UTENTE SPECIFICO
+    //OTTIENE I COLLOQUI DI UN UTENTE SPECIFICO (METODO AMMINISTRATORE)
     @GET
     @Path("/{id}/colloqui")
     @Produces(MediaType.APPLICATION_JSON)
     public List<CreateColloquioResponse> getColloquiUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) throws SQLException {
         CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
-            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+            throw new RuntimeException("Non sei autorizzato a visualizzare i colloqui di un utente");
         }
         return utenteRepository.getColloquiUtenteById(id);
+    }
+
+    //OTTIENE LE CANDIDATURE DELL'UTENTE STESSO
+    @GET
+    @Path("/profile/candidature")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CreateCandidaturaResponse> getMyCandidature(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
+        int idUtente = sessionRepository.getIdBySession(sessionId);
+        return utenteRepository.getCandidatureUtenteById(idUtente);
+    }
+
+    //OTTIENE I COLLOQUI DELL'UTENTE STESSO
+    @GET
+    @Path("/profile/colloqui")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CreateColloquioResponse> getMyColloqui(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
+        int idUtente = sessionRepository.getIdBySession(sessionId);
+        return utenteRepository.getColloquiUtenteById(idUtente);
     }
 
 
