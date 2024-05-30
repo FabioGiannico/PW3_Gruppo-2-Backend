@@ -51,8 +51,8 @@ public class AuthenticationResource {
 
             LOGIN DA AMMINISTRATORE
             {
-                "email": "mario.rossi@example.it",
-                "password": "rossi"
+                "email": "admin.one@example.com",
+                "password": "Admin01!"
             }
     */
     @POST
