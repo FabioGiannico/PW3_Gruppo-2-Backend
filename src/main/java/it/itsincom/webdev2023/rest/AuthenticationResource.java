@@ -1,5 +1,6 @@
 package it.itsincom.webdev2023.rest;
 
+import it.itsincom.webdev2023.rest.model.CreateProfileResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
@@ -28,6 +29,7 @@ public class AuthenticationResource {
     /*    {
                 "nome": "xxxxx",
                 "cognome": "xxxxx",
+                "ruolo": "xxxxx",
                 "email": "xxxxx@xxx.it",
                 "password": "xxxxx"
             }
@@ -83,7 +85,7 @@ public class AuthenticationResource {
     // OTTIENE LE INFO DELL'UTENTE
     @GET
     @Path("/profile")
-    public CreateUtenteResponse getProfile(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws WrongUsernameOrPasswordException {
+    public CreateProfileResponse getProfile(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws WrongUsernameOrPasswordException {
         if (sessionId == -1) {
             throw new WrongUsernameOrPasswordException();
         }

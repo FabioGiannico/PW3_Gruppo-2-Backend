@@ -4,6 +4,7 @@ import it.itsincom.webdev2023.persistence.model.*;
 import it.itsincom.webdev2023.persistence.model.Candidatura;
 import it.itsincom.webdev2023.persistence.repository.CorsoRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
+import it.itsincom.webdev2023.rest.model.CreateProfileResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 
@@ -52,7 +53,7 @@ public class CorsoResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Corso createCorso(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, Corso corso) throws SQLException {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
             throw new RuntimeException("Non sei autorizzato a creare un corso");
         }
@@ -64,7 +65,7 @@ public class CorsoResource {
     @DELETE
     @Path("/{id}")
     public Response deleteCorso(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
             throw new RuntimeException("Non sei autorizzato a cancellare un corso");
         }
@@ -100,7 +101,7 @@ public class CorsoResource {
     @PUT
     @Path("/{idCorso}/candidature/{idUtente}/accetta")
     public void accettaUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("idCorso") int idCorso, @PathParam("idUtente") int idUtente) throws SQLException {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
             throw new RuntimeException("Non sei autorizzato a gesetire l'iscrizione di un utente ad un corso");
         }
@@ -111,7 +112,7 @@ public class CorsoResource {
     @PUT
     @Path("/{idCorso}/candidature/{idUtente}/reindirizzare")
     public void reindirizzaUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId,@PathParam("idCorso") int idCorso, @PathParam("idUtente") int idUtente) throws SQLException {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
             throw new RuntimeException("Non sei autorizzato a gesetire l'iscrizione di un utente ad un corso");
         }
@@ -121,7 +122,7 @@ public class CorsoResource {
     @PUT
     @Path("/{idCorso}/candidature/{idUtente}/test")
     public void risultatoTest(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("idCorso") int idCorso, @PathParam("idUtente") int idUtente, RisultatoTest risultatoTest) throws SQLException {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
             throw new RuntimeException("Non sei autorizzato a cambiare il risultato del test");
         }
@@ -133,7 +134,7 @@ public class CorsoResource {
     @Path("/{idCorso}/candidature")
     @Consumes(MediaType.APPLICATION_JSON)
     public void candidaturaCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
-        CreateUtenteResponse utente = authenticationService.getProfile(sessionId);
+        CreateProfileResponse utente = authenticationService.getProfile(sessionId);
         if (utente == null) {
             throw new RuntimeException("Devi essere loggato per candidarti a un corso");
         }

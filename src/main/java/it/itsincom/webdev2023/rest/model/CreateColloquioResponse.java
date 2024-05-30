@@ -3,15 +3,18 @@ package it.itsincom.webdev2023.rest.model;
 import it.itsincom.webdev2023.persistence.model.Esito;
 
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class CreateColloquioResponse {
     private int idCandidatura;
     private int idInsegnante;
-    private Date data;
-    private Time orario;
+    private LocalDate data;
+    private LocalTime orario;
     private String luogo;
     private Esito esito;
+
 
     public int getIdCandidatura() {
         return idCandidatura;
@@ -29,19 +32,19 @@ public class CreateColloquioResponse {
         this.idInsegnante = idInsegnante;
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(Date data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 
-    public Time getOrario() {
+    public LocalTime getOrario() {
         return orario;
     }
 
-    public void setOrario(Time orario) {
+    public void setOrario(LocalTime orario) {
         this.orario = orario;
     }
 

@@ -1,15 +1,10 @@
 package it.itsincom.webdev2023.service;
 
 
-import it.itsincom.webdev2023.persistence.model.Candidatura;
-import it.itsincom.webdev2023.persistence.model.Ruolo;
-import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
-import it.itsincom.webdev2023.persistence.model.Utente;
+import it.itsincom.webdev2023.persistence.model.*;
+import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
-import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
-import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
-import it.itsincom.webdev2023.rest.model.CreateUtenteRequest;
-import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
+import it.itsincom.webdev2023.rest.model.*;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import javax.sql.DataSource;
@@ -26,11 +21,13 @@ public class UtenteService {
     private final DataSource dataSource;
     private final HashCalculator hashCalculator;
     private final UtenteRepository utenteRepository;
+    private final SessionRepository sessionRepository;
 
-    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator, DataSource dataSource) {
+    public UtenteService(UtenteRepository utenteRepository, HashCalculator hashCalculator, DataSource dataSource, SessionRepository sessionRepository) {
         this.utenteRepository = utenteRepository;
         this.hashCalculator = hashCalculator;
         this.dataSource = dataSource;
+        this.sessionRepository = sessionRepository;
     }
 
     public CreateUtenteResponse createUtente(CreateUtenteRequest utente) {
@@ -43,9 +40,8 @@ public class UtenteService {
         u.setNome(utente.getNome());
         u.setCognome(utente.getCognome());
         u.setEmail(utente.getEmail());
+        u.setRuolo(Ruolo.valueOf(utente.getRuolo()));
         u.setRegistrazione(new Timestamp(System.currentTimeMillis()));
-        u.setRuolo( Ruolo.valueOf(utente.getRuolo()));
-    //set ruolo
 
         u.setPasswordHash(hash);
 
@@ -63,14 +59,36 @@ public class UtenteService {
         return response;
     }
 
-    public List<CreateUtenteResponse> getAllUtenti() {
-        List<Utente> utenti = utenteRepository.getAllUtenti();
-        List<CreateUtenteResponse> responses = new ArrayList<>();
-        for (Utente utente : utenti) {
-            CreateUtenteResponse response = convertToResponse(utente);
-            responses.add(response);
-        }
-        return responses;
+    // OTTIENE LA LISTA DEGLI UTENTI CON RELATIVO INDIRIZZO
+    public List<CreateProfileResponse> getAllUtenti() throws SQLException {
+        List<CreateProfileResponse> responses = new ArrayList<>();
+            List<Utente> utenti = utenteRepository.getAllUtenti();
+            for (Utente utente : utenti) {
+                Indirizzo indirizzo = utenteRepository.getIndirizzo(utente);
+                CreateProfileResponse res = convertToProfileResponse(utente, indirizzo);
+                responses.add(res);
+            }
+            return responses;
+    }
+
+
+    private CreateProfileResponse convertToProfileResponse(Utente u, Indirizzo indirizzo){
+        Indirizzo i = new Indirizzo();
+        i.setIndirizzoResidenza(indirizzo.getIndirizzoResidenza());
+        i.setCitta(indirizzo.getCitta());
+        i.setProvincia(indirizzo.getProvincia());
+        i.setCap(indirizzo.getCap());
+
+        CreateProfileResponse res = new CreateProfileResponse();
+        res.setNome(u.getNome());
+        res.setCognome(u.getCognome());
+        res.setEmail(u.getEmail());
+        res.setRuolo(u.getRuolo());
+        res.setTelefono(u.getTelefono());
+        res.setIndirizzo(indirizzo);
+        res.setDataNascita(u.getDataNascita());
+
+        return res;
     }
 
     private CreateUtenteResponse convertToResponse(Utente utente) {
@@ -85,29 +103,5 @@ public class UtenteService {
         response.setIndirizzo(utente.getIndirizzo());
         response.setDataRegistrazione(utente.getRegistrazione());
         return response;
-    }
-
-    public CreateUtenteResponse getUtenteById(int utenteId) {
-        Utente utente = utenteRepository.getUtenteById(utenteId);
-        //4. Conversione
-        CreateUtenteResponse ur = convertToResponse(utente);
-        //5. Return
-        return ur;
-    }
-
-    public List<CreateCandidaturaResponse> getCandidatureUtenteById(int id) throws SQLException {
-        return utenteRepository.getCandidatureUtenteById(id);
-    }
-
-    public List<CreateColloquioResponse> getColloquiUtenteById(int id) throws SQLException {
-        return utenteRepository.getColloquiUtenteById(id);
-    }
-
-    public CreateUtenteResponse getUtenteByNome(String nome) {
-        Utente utente = utenteRepository.getUtenteByNome(nome);
-
-        CreateUtenteResponse ur = convertToResponse(utente);
-
-        return ur;
     }
 }
