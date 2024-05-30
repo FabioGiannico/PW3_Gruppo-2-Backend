@@ -8,6 +8,7 @@ import it.itsincom.webdev2023.rest.model.CreateProfileResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.AuthenticationService;
 
+import it.itsincom.webdev2023.service.exception.DoubleSubscriptionException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -133,12 +134,30 @@ public class CorsoResource {
     @POST
     @Path("/{idCorso}/candidature")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void candidaturaCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
-        CreateProfileResponse utente = authenticationService.getProfile(sessionId);
-        if (utente == null) {
-            throw new RuntimeException("Devi essere loggato per candidarti a un corso");
+    public Response candidaturaCorso(@PathParam("idCorso") int idCorso, @CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) {
+        try {
+            CreateProfileResponse utente = authenticationService.getProfile(sessionId);
+            if (utente == null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Devi essere loggato per candidarti a un corso")
+                        .build();
+            }
+
+            if (corsoRepository.isUtenteIscritto(utente.getId(), idCorso)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Iscriversi 2 volte allo stesso corso non è possibile")
+                        .build();
+            }
+
+            corsoRepository.candidaturaCorso(utente.getId(), idCorso);
+            return Response.status(Response.Status.OK)
+                    .entity("{\"message\": \"Success\"}")
+                    .build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"message\": \"An error occurred while processing your request.\"}")
+                    .build();
         }
-        corsoRepository.candidaturaCorso(utente.getId(), idCorso);
     }
 
 
