@@ -1,5 +1,7 @@
 package it.itsincom.webdev2023.persistence.model;
 
+import jakarta.json.bind.annotation.JsonbDateFormat;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 
