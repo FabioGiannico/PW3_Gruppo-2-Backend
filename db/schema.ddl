@@ -129,12 +129,12 @@ VALUES
     ('Giorgio', 'Blu', 'giorgio.blu@example.com', '5yb5byy5hhhy55', 'utente', '8901234567', '1983-08-08', 8),
     ('Francesca', 'Grigi', 'francesca.grigi@example.com', '5yh5byb5yvb5yg5t', 'utente', '9012345678', '1995-09-09', 9),
     ('Alessandro', 'Nero', 'alessandro.nero@example.com', '5byby5y5byh5jyj5y', 'utente', '0123456789', '1969-10-10', 10);
-INSERT INTO Corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine)
+INSERT INTO Corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine)
 VALUES
-    ('Web Developer', 'Corso di sviluppo web', 'Informatica', 2, 'HTML, CSS, JavaScript', 'Nessuno', 20, '2024-06-01', '2024-08-31'),
-    ('Data Science', 'Corso di data science', 'Informatica', 2, 'Python, R, Machine Learning', 'Conoscenze di base di programmazione', 15, '2024-07-01', '2024-12-31'),
-    ('Web Designer', 'Corso grafica digitale', 'Comunicazione', 2, 'Photoshop, Illustrator', 'Nessuno', 25, '2024-06-15', '2024-09-15'),
-    ('Digital Marketing', 'Corso di marketing digitale', 'Comunicazione', 2, 'SEO, SEM, Social Media', 'Nessuno', 30, '2024-07-15', '2024-11-15'),
-    ('Cloud Developer', 'Corso di tecnologie cloud', 'Informatica', 2, 'Microsoft Azure', 'Nessuno', 20, '2024-06-01', '2024-09-30'),
-    ('IOT', 'Corso  di IOT', 'Nuove Tecnologie', 1, 'Domotica', 'Nessuno', 10, '2024-08-01', '2024-11-30'),
-    ('Manufacturing Design', 'Corso di design laboratoriale', 'Nuove Tecnologie', 1, 'Tecniche laboratoriali digitali', 'Nessuno', 15, '2024-06-20', '2024-08-20');
+    ('Web Developer', 'Corso di sviluppo web', 'Informatica', 2, 'HTML, CSS, JavaScript', 'Nessuno', 20, '2024-06-01', '2024-08-31', 'https://th.bing.com/th/id/OIP.yhcKQdAh1orG4s-1Qqe70QAAAA?rs=1&pid=ImgDetMain'),
+    ('Data Science', 'Corso di data science', 'Informatica', 2, 'Python, R, Machine Learning', 'Conoscenze di base di programmazione', 15, '2024-07-01', '2024-12-31', 'https://th.bing.com/th/id/R.852c0d7428602819c4e68630549df1fd?rik=DAySL8R3NeVRUg&pid=ImgRaw&r=0'),
+    ('Web Designer', 'Corso grafica digitale', 'Comunicazione', 2, 'Photoshop, Illustrator', 'Nessuno', 25, '2024-06-15', '2024-09-15', 'https://th.bing.com/th/id/R.852c0d7428602819c4e68630549df1fd?rik=DAySL8R3NeVRUg&pid=ImgRaw&r=0'),
+    ('Digital Marketing', 'Corso di marketing digitale', 'Comunicazione', 2, 'SEO, SEM, Social Media', 'Nessuno', 30, '2024-07-15', '2024-11-15','https://th.bing.com/th/id/OIP.8bfo6rY2iWETdrC38j1P6gHaGr?rs=1&pid=ImgDetMain'),
+    ('Cloud Developer', 'Corso di tecnologie cloud', 'Informatica', 2, 'Microsoft Azure', 'Nessuno', 20, '2024-06-01', '2024-09-30','https://th.bing.com/th/id/OIP.qjGHzGv29s5OAZzxDaIK0QHaHa?rs=1&pid=ImgDetMain'),
+    ('IOT', 'Corso  di IOT', 'Nuove Tecnologie', 1, 'Domotica', 'Nessuno', 10, '2024-08-01', '2024-11-30','https://www.pngmart.com/files/21/Internet-Of-Things-IOT-Vector-PNG-Transparent.png'),
+    ('Manufacturing Design', 'Corso di design laboratoriale', 'Nuove Tecnologie', 1, 'Tecniche laboratoriali digitali', 'Nessuno', 15, '2024-06-20', '2024-08-20','https://th.bing.com/th/id/OIP.JP0uTwV-jLqhIvV6z9gdHwAAAA?rs=1&pid=ImgDetMain');
