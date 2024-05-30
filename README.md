@@ -16,6 +16,10 @@ Installazione
 
 3) Esegui il progetto utilizzando Maven
 
+4) l'email e la password del admin sono:
+email: admin.one@example.com
+password: Admin01!
+
 ## Documentazione del codice
 
 * Il codice è organizzato in vari pacchetti, ognuno dei quali ha una specifica responsabilità nel progetto. Ecco una breve descrizione di ciascuno:  
