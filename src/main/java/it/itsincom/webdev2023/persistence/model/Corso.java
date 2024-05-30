@@ -18,11 +18,20 @@ public class Corso {
     private LocalDate dataInizio;
     @JsonbDateFormat("yyyy-MM-dd")
     private LocalDate dataFine;
+    private String immagini;
 
 
     // GETTER E SETTER
     public int getId() {
         return id;
+    }
+
+    public String getImmagini() {
+        return immagini;
+    }
+
+    public void setImmagini(String immagini) {
+        this.immagini = immagini;
     }
 
     public void setId(int id) {

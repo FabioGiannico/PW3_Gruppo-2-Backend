@@ -25,7 +25,7 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, corso.getNome());
                 statement.setString(2, corso.getDescrizione());
@@ -36,6 +36,7 @@ public class CorsoRepository {
                 statement.setInt(7, corso.getPostiDisponibili());
                 statement.setDate(8, Date.valueOf(corso.getDataInizio()));
                 statement.setDate(9, Date.valueOf(corso.getDataFine()));
+                statement.setString(10, corso.getImmagini());
 
                 statement.executeUpdate();
 
@@ -57,7 +58,7 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi")) {
+                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine FROM corsi")) {
                 var resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
@@ -76,7 +77,7 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE categoria = ?")) {
+                    "SELECT id_corso, nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine FROM corsi WHERE categoria = ?")) {
                 statement.setString(1, categoria);
                 var resultSet = statement.executeQuery();
 
@@ -164,7 +165,7 @@ public class CorsoRepository {
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT id_corso, nome_corso, descrizione, categoria, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine FROM corsi WHERE id_corso = ?")) {
+                    "SELECT id_corso, nome_corso, descrizione, categoria, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine FROM corsi WHERE id_corso = ?")) {
                 statement.setInt(1, id);
                 var resultSet = statement.executeQuery();
 
@@ -296,5 +297,6 @@ public class CorsoRepository {
         corso.setPostiDisponibili(resultSet.getInt("posti_disponibili"));
         corso.setDataInizio(resultSet.getDate("data_inizio").toLocalDate());
         corso.setDataFine(resultSet.getDate("data_fine").toLocalDate());
+        corso.setImmagini(resultSet.getString("immagine"));
     }
 }
