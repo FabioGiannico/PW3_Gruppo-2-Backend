@@ -1,3 +1,30 @@
+# PW3_Gruppo-2-Backend
+
+Questo è un progetto Java Spring Boot che utilizza Maven come strumento di gestione del progetto.  
+Prerequisiti
+
+Per eseguire questo progetto, avrai bisogno di:
+-JDK 11 o superiore
+-Maven 3.6.0 o superiore
+
+Installazione
+1) Clona il repository GitHub sul tuo computer locale. Puoi farlo utilizzando il seguente comando git:
+`git clone https://github.com/FabioGiannico/PW3_Gruppo-2-Backend/commits/develop/`
+
+2) Naviga nella directory del progetto
+  `cd PW3_Gruppo-2-Backend`
+
+3) Esegui il progetto utilizzando Maven
+
+## Documentazione del codice
+
+* Il codice è organizzato in vari pacchetti, ognuno dei quali ha una specifica responsabilità nel progetto. Ecco una breve descrizione di ciascuno:  
+* it.itsincom.webdev2023.persistence.repository: Contiene le classi repository che gestiscono l'interazione con il database.
+* it.itsincom.webdev2023.persistence.model: Contiene le classi modello che rappresentano le entità del database.
+* it.itsincom.webdev2023.rest.model: Contiene le classi modello utilizzate per la comunicazione REST.
+* it.itsincom.webdev2023.rest: Contiene le classi resource che gestiscono le richieste HTTP.
+* it.itsincom.webdev2023.service: Contiene le classi di servizio che implementano la logica tra mondo del database e il REST.
+
 # pw-back-end
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
