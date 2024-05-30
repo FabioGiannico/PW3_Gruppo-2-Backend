@@ -5,6 +5,7 @@ import it.itsincom.webdev2023.persistence.model.Sessione;
 import it.itsincom.webdev2023.persistence.model.Utente;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
+import it.itsincom.webdev2023.rest.model.CreateProfileResponse;
 import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
 import it.itsincom.webdev2023.service.exception.SessionCreationException;
 import it.itsincom.webdev2023.service.exception.WrongUsernameOrPasswordException;
@@ -58,13 +59,13 @@ public class AuthenticationService {
         sessionRepository.delete(sessionId);
     }
 
-    public CreateUtenteResponse getProfile(int sessionId){
+    public CreateProfileResponse getProfile(int sessionId){
         //1. Recuperare la sessione dal database
         Sessione s = sessionRepository.getSessionById(sessionId);
         //2. Recuperare l'id partecipante della sessione
         int utenteId= s.getPartecipanteId();
         //3. Recupero il partecipante dal database
-        return utenteService.getUtenteById(utenteId);
+        return utenteRepository.getUtenteById(utenteId);
     }
 
 }

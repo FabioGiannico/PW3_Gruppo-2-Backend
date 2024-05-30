@@ -3,10 +3,7 @@ package it.itsincom.webdev2023.rest;
 import it.itsincom.webdev2023.persistence.model.Ruolo;
 import it.itsincom.webdev2023.persistence.repository.SessionRepository;
 import it.itsincom.webdev2023.persistence.repository.UtenteRepository;
-import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
-import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
-import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
-import it.itsincom.webdev2023.rest.model.CreateUtenteResponse;
+import it.itsincom.webdev2023.rest.model.*;
 import it.itsincom.webdev2023.service.AuthenticationService;
 import it.itsincom.webdev2023.service.UtenteService;
 import jakarta.ws.rs.*;
@@ -31,20 +28,23 @@ public class UtenteResource {
     }
 
     // OTTIENE LA LISTA DEGLI UTENTI
-    // TODO: SOLO AMMINISTRATORE
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CreateUtenteResponse> getAllUtenti(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) {
+    public List<CreateProfileResponse> getAllUtenti(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId) throws SQLException {
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a visualizzare tutti gli utenti");
+        }
         return utenteService.getAllUtenti();
     }
 
-    //SOLO L'AMMINISTRATORE ELIMINA DALLA TABELLE UTENTI GLI INSEGNANTI E GLI UTENTI
+    //SOLO L'AMMINISTRATORE ELIMINA DALLA TABELLE "UTENTI" GLI INSEGNANTI E GLI UTENTI
     @DELETE
     @Path("/{id}")
     public Response deleteUtente(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
-        CreateUtenteResponse profile = authenticationService.getProfile(sessionId);
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
         if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
-            throw new RuntimeException("Non sei autorizzato a cancellare un corso");
+            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
         }
         utenteRepository.deleteUtente(id);
         return Response.ok().build();
@@ -54,16 +54,24 @@ public class UtenteResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse getUtenteById(@PathParam("id") int id) {
-        return utenteService.getUtenteById(id);
+    public CreateProfileResponse getUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) {
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+        }
+        return utenteRepository.getUtenteById(id);
     }
 
     // TROVA UN UTENTE PER NOME
     @GET
     @Path("/find/{nome}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CreateUtenteResponse getUtenteByNome(@PathParam("nome") String nome) {
-        return utenteService.getUtenteByNome(nome);
+    public CreateProfileResponse getUtenteByNome(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("nome") String nome) {
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+        }
+        return utenteRepository.getUtenteByNome(nome);
     }
 
 
@@ -71,22 +79,30 @@ public class UtenteResource {
     @GET
     @Path("/{id}/candidature")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CreateCandidaturaResponse> getCandidatureUtenteById(@PathParam("id") int id) throws SQLException {
-        return utenteService.getCandidatureUtenteById(id);
+    public List<CreateCandidaturaResponse> getCandidatureUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) throws SQLException {
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+        }
+        return utenteRepository.getCandidatureUtenteById(id);
     }
 
     //OTTIENE I COLLOQUI DI UN UTENTE SPECIFICO
     @GET
     @Path("/{id}/colloqui")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CreateColloquioResponse> getColloquiUtenteById(@PathParam("id") int id) throws SQLException {
-        return utenteService.getColloquiUtenteById(id);
+    public List<CreateColloquioResponse> getColloquiUtenteById(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, @PathParam("id") int id) throws SQLException {
+        CreateProfileResponse profile = authenticationService.getProfile(sessionId);
+        if (profile == null || profile.getRuolo() != Ruolo.amministratore) {
+            throw new RuntimeException("Non sei autorizzato a cancellare un utente");
+        }
+        return utenteRepository.getColloquiUtenteById(id);
     }
 
 
 // MODIFICA LE INFO DEL PROFILO CONTROLLANDO L'ID DELL'UTENTE
 
-    /*
+    /*      SI PUO' MODIFICARE ANCHE UN SOLO CAMPO TRA QUELLI ELENCATI
 {
     "nome": "xxxx",
     "cognome": "xxxx",
@@ -99,7 +115,7 @@ public class UtenteResource {
     "dataNascita" : "xxxx-xx-xx"
 }
      */
-    @PUT
+    @PATCH
     @Path("/profile/modify")
     @Consumes(MediaType.APPLICATION_JSON)
     public void modificaInfo(@CookieParam("SESSION_COOKIE") @DefaultValue("-1") int sessionId, CreateModifyRequest modify) throws SQLException {

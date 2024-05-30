@@ -1,12 +1,10 @@
 package it.itsincom.webdev2023.persistence.repository;
 
-import it.itsincom.webdev2023.persistence.model.Esito;
-import it.itsincom.webdev2023.persistence.model.Ruolo;
-import it.itsincom.webdev2023.persistence.model.StatoCandidatura;
-import it.itsincom.webdev2023.persistence.model.Utente;
+import it.itsincom.webdev2023.persistence.model.*;
 import it.itsincom.webdev2023.rest.model.CreateCandidaturaResponse;
 import it.itsincom.webdev2023.rest.model.CreateColloquioResponse;
 import it.itsincom.webdev2023.rest.model.CreateModifyRequest;
+import it.itsincom.webdev2023.rest.model.CreateProfileResponse;
 import it.itsincom.webdev2023.service.HashCalculator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
@@ -29,6 +27,9 @@ public class UtenteRepository {
         this.corsoRepository = corsoRepository;
         this.hashCalculator = hashCalculator;
     }
+
+    private String getUtenteByNomeQuery = "SELECT u.id_utente, u.nome, u.cognome, u.email, u.telefono, u.data_nascita, u.data_registrazione, i.indirizzo_residenza, i.citta, i.provincia, i.cap FROM utenti u LEFT JOIN indirizzi i ON u.id_indirizzo = i.id_indirizzo WHERE u.nome = ?";
+    private String getUtenteByIdQuery = "SELECT u.id_utente, u.nome, u.cognome, u.email, u.ruolo, u.telefono, u.data_nascita, u.data_registrazione, i.indirizzo_residenza, i.citta, i.provincia, i.cap FROM utenti u LEFT JOIN indirizzi i ON u.id_indirizzo = i.id_indirizzo WHERE u.id_utente = ?";
 
 
     // CREA UN UTENTE
@@ -143,57 +144,64 @@ public class UtenteRepository {
     }
 
     // OTTIENE L'UTENTE TRAMITE L'ID
-    public Utente getUtenteById(int id) {
+    public CreateProfileResponse getUtenteById(int id) {
+        var res = new CreateProfileResponse();
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE id_utente = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement(getUtenteByIdQuery)) {
                 statement.setInt(1, id);
                 var resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    var utente = new Utente();
-                    utente.setId(resultSet.getInt("id_utente"));
-                    utente.setNome(resultSet.getString("nome"));
-                    utente.setCognome(resultSet.getString("cognome"));
-                    utente.setEmail(resultSet.getString("email"));
-                    utente.setPasswordHash(resultSet.getString("password_hash"));
-                    utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
-                    utente.setTelefono(resultSet.getString("telefono"));
-                    utente.setDataNascita(resultSet.getDate("data_nascita"));
-                    utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
-                    utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
-                    return utente;
+                if (resultSet.next()) {
+
+                    Indirizzo indirizzo = new Indirizzo();
+                    indirizzo.setIndirizzoResidenza(resultSet.getString("indirizzo_residenza"));
+                    indirizzo.setCitta(resultSet.getString("citta"));
+                    indirizzo.setProvincia(resultSet.getString("provincia"));
+                    indirizzo.setCap(resultSet.getString("cap"));
+
+                    res.setId(resultSet.getInt("id_utente"));
+                    res.setNome(resultSet.getString("nome"));
+                    res.setCognome(resultSet.getString("cognome"));
+                    res.setEmail(resultSet.getString("email"));
+                    res.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
+                    res.setTelefono(resultSet.getString("telefono"));
+                    res.setDataNascita(resultSet.getDate("data_nascita"));
+                    res.setIndirizzo(indirizzo);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return res;
     }
 
     // OTTIENE L'UTENTE TRAMITE IL NOME
-    public Utente getUtenteByNome(String nome) {
+    public CreateProfileResponse getUtenteByNome(String nome) {
+        CreateProfileResponse res = new CreateProfileResponse();
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT id_utente, nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo, data_registrazione FROM utenti WHERE nome = ?")) {
+            try (PreparedStatement statement = connection.prepareStatement(getUtenteByNomeQuery)) {
                 statement.setString(1, nome);
                 var resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    var utente = new Utente();
-                    utente.setId(resultSet.getInt("id_utente"));
-                    utente.setNome(resultSet.getString("nome"));
-                    utente.setCognome(resultSet.getString("cognome"));
-                    utente.setEmail(resultSet.getString("email"));
-                    utente.setPasswordHash(resultSet.getString("password_hash"));
-                    utente.setRuolo(Ruolo.valueOf(resultSet.getString("ruolo")));
-                    utente.setTelefono(resultSet.getString("telefono"));
-                    utente.setDataNascita(resultSet.getDate("data_nascita"));
-                    utente.setIndirizzo(resultSet.getInt("id_indirizzo"));
-                    utente.setRegistrazione(resultSet.getTimestamp("data_registrazione"));
-                    return utente;
+                if (resultSet.next()) {
+
+                    Indirizzo indirizzo = new Indirizzo();
+                    indirizzo.setIndirizzoResidenza(resultSet.getString("indirizzo_residenza"));
+                    indirizzo.setCitta(resultSet.getString("citta"));
+                    indirizzo.setProvincia(resultSet.getString("provincia"));
+                    indirizzo.setCap(resultSet.getString("cap"));
+
+                    res.setId(resultSet.getInt("id_utente"));
+                    res.setNome(resultSet.getString("nome"));
+                    res.setCognome(resultSet.getString("cognome"));
+                    res.setEmail(resultSet.getString("email"));
+                    res.setTelefono(resultSet.getString("telefono"));
+                    res.setDataNascita(resultSet.getDate("data_nascita"));
+                    res.setIndirizzo(indirizzo);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return res;
     }
 
     // OTTIENE LE CANDIDATURE DI UN UTENTE
@@ -223,7 +231,8 @@ public class UtenteRepository {
     }
 
     // OTTIENE I COLLOQUI DI UN UTENTE
-    public List<CreateColloquioResponse> getColloquiUtenteById(int idCandidatura) throws SQLException {
+    public List<CreateColloquioResponse> getColloquiUtenteById(int idUtente) throws SQLException {
+        int idCandidatura = getIdCandidaturaByIdUtente(idUtente);
         List<CreateColloquioResponse> listaColloqui = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
@@ -235,8 +244,8 @@ public class UtenteRepository {
                         CreateColloquioResponse colloquio = new CreateColloquioResponse();
                         colloquio.setIdCandidatura(resultSet.getInt("id_candidatura"));
                         colloquio.setIdInsegnante(resultSet.getInt("id_insegnante"));
-                        colloquio.setData(resultSet.getDate("data_colloquio"));
-                        colloquio.setOrario(resultSet.getTime("ora_colloquio"));
+                        colloquio.setData(resultSet.getDate("data_colloquio").toLocalDate());
+                        colloquio.setOrario(resultSet.getTime("ora_colloquio").toLocalTime());
                         colloquio.setLuogo(resultSet.getString("luogo_colloquio"));
                         colloquio.setEsito(Esito.valueOf(resultSet.getString("esito_colloquio")));
 
@@ -248,6 +257,23 @@ public class UtenteRepository {
             throw new RuntimeException(e);
         }
         return listaColloqui;
+    }
+
+    public int getIdCandidaturaByIdUtente(int idUtente){
+        int idCandidatura = 0;
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT id_candidatura FROM candidature WHERE id_utente = ?")) {
+                statement.setInt(1, idUtente);
+                ResultSet res = statement.executeQuery();
+
+                while (res.next()) {
+                    idCandidatura = res.getInt("id_candidatura");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return idCandidatura;
     }
 
     // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
@@ -281,19 +307,44 @@ public class UtenteRepository {
     }
 */
 
-    // TODO: CONTROLLA CHE L'INDIRIZZO NON SIA UTILIZZATO GIA' DA QUALCUNO. SE SI' NON ELIMINARLO, ALTRIMENTI FAI UPDATE DELLA ROW
-    public void modificaInfo(int idUtente, CreateModifyRequest req) {
+    public void modificaInfo(int idUtente, CreateModifyRequest req) throws SQLException {
+        StringBuilder query = new StringBuilder("UPDATE utenti SET ");
+        List<Object> parameters = new ArrayList<>();
+
+        if (req.getNome() != null) {
+            query.append("nome = ?, ");
+            parameters.add(req.getNome());
+        }
+        if (req.getCognome() != null) {
+            query.append("cognome = ?, ");
+            parameters.add(req.getCognome());
+        }
+        if (req.getEmail() != null) {
+            query.append("email = ?, ");
+            parameters.add(req.getEmail());
+        }
+        if (req.getTelefono() != null) {
+            query.append("telefono = ?, ");
+            parameters.add(req.getTelefono());
+        }
+        if (req.getDataNascita() != null) {
+            query.append("data_nascita = ?, ");
+            parameters.add(req.getDataNascita());
+        }
+        if (req.getIndirizzo() != null) {
+            query.append("id_indirizzo = ?, ");
+            parameters.add(setIndirizzo(req));
+        }
+
+        query.setLength(query.length() - 2);
+        query.append(" WHERE id_utente = ?");
+        parameters.add(idUtente);
 
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("UPDATE utenti SET nome = ?, cognome = ?, email = ?, telefono = ?, data_nascita = ?, id_indirizzo = ? WHERE id_utente = ?")) {
-                statement.setString(1, req.getNome());
-                statement.setString(2, req.getCognome());
-                statement.setString(3, req.getEmail());
-                statement.setString(4, req.getTelefono());
-                statement.setDate(5, req.getDataNascita());
-                statement.setInt(6, setIndirizzo(req));
-                statement.setInt(7, idUtente);
-
+            try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+                for (int i = 0; i < parameters.size(); i++) {
+                    statement.setObject(i + 1, parameters.get(i));
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -301,6 +352,27 @@ public class UtenteRepository {
         }
     }
 
+    // SELEZIONA L'INDIRIZZO TRAMITE L'UTENTE
+    public Indirizzo getIndirizzo(Utente u){
+        Indirizzo i = new Indirizzo();
+        int idIndirizzo = u.getIndirizzo();
+
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT indirizzo_residenza, citta, provincia, cap FROM indirizzi WHERE id_indirizzo = ?")) {
+                statement.setInt(1, idIndirizzo);
+                ResultSet res = statement.executeQuery();
+                while (res.next()){
+                    i.setIndirizzoResidenza(res.getString("indirizzo_residenza"));
+                    i.setCitta(res.getString("citta"));
+                    i.setProvincia(res.getString("provincia"));
+                    i.setCap(res.getString("cap"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return i;
+    }
 
     // SELEZIONA L'INDIRIZZO: ESISTE => RETURN ID  /  NON ESISTE => RETURN -1
     public int getIdIndirizzo(CreateModifyRequest indirizzo) {
