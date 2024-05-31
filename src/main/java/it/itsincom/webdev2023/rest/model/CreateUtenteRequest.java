@@ -9,12 +9,21 @@ import java.sql.Timestamp;
 
 public class CreateUtenteRequest {
 
+    private int id;
     private String nome;
     private String cognome;
     private String email;
     private String password;
     private String ruolo;
     private Timestamp registrazione = new Timestamp(System.currentTimeMillis());
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getRuolo() {
         return ruolo;

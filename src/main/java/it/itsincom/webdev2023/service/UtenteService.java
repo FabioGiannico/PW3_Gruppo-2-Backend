@@ -80,6 +80,7 @@ public class UtenteService {
         i.setCap(indirizzo.getCap());
 
         CreateProfileResponse res = new CreateProfileResponse();
+        res.setId(u.getId());
         res.setNome(u.getNome());
         res.setCognome(u.getCognome());
         res.setEmail(u.getEmail());
