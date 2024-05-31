@@ -20,6 +20,10 @@ Installazione
 email: admin.one@example.com
 password: Admin01!
 
+in caso si vuole entrare in account utente gia esistente
+email: signor@test.com
+password: Forte1234!
+
 ## Documentazione del codice
 
 * Il codice è organizzato in vari pacchetti, ognuno dei quali ha una specifica responsabilità nel progetto. Ecco una breve descrizione di ciascuno:  

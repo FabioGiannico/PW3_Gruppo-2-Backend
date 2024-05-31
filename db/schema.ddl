@@ -79,7 +79,7 @@ BEGIN
     SELECT ruolo INTO user_role FROM Utenti WHERE id_utente = NEW.id_utente;
     IF user_role IN ('insegnante', 'amministratore') THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insegnanti e amministratori non possono candidarsi ai corsi.';
-END IF;
+    END IF;
 END;
 CREATE TRIGGER controllare_insegnante_in_colloquio
     BEFORE INSERT
@@ -90,7 +90,7 @@ BEGIN
     SELECT ruolo INTO user_role FROM Utenti WHERE id_utente = NEW.id_insegnante;
     IF user_role != 'insegnante' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo gli insegnanti possono essere referenziati nei colloqui.';
-END IF;
+    END IF;
 END;
 CREATE TRIGGER solo_amministratori_possono_aggiungere_corsi
     BEFORE INSERT ON Corsi
@@ -98,7 +98,6 @@ CREATE TRIGGER solo_amministratori_possono_aggiungere_corsi
 BEGIN
     DECLARE user_role ENUM('utente', 'insegnante', 'amministratore');
 
-    -- Assuming that the user ID who is trying to add the course is passed as a session variable
     SELECT ruolo INTO user_role FROM Utenti WHERE id_utente = @current_user_id;
 
     IF user_role != 'amministratore' THEN
@@ -120,7 +119,7 @@ VALUES
 INSERT INTO Utenti (nome, cognome, email, password_hash, ruolo, telefono, data_nascita, id_indirizzo)
 VALUES
     ('Admin', 'One', 'admin.one@example.com', 'fHHAiTFtevniHnzMK68AqvIecEFT5UbGe5hjkbDwQYWhZ1yQE7urQlftZkyqQJ35/l0rHq3tjpRWkbFm0LtROg', 'amministratore', '1234567890', '1980-01-01', 1),
-    ('Luigi', 'Verdi', 'luigi.verdi@example.com', 'hyty5h5yb5yyb5h5by', 'utente', '2345678901', '1975-02-02', 2),
+    ('Luigi', 'Verdi', 'luigi.verdi@example.com', 'hyty5h5yb5yyb5h5by', 'insegnante', '2345678901', '1975-02-02', 2),
     ('Anna', 'Bianchi', 'anna.bianchi@example.com', '5nyhby5y5tbtb5t', 'utente', '3456789012', '1985-03-03', 3),
     ('Paolo', 'Neri', 'paolo.neri@example.com', '5hj5hy5yby5v55', 'utente', '4567890123', '1990-04-04', 4),
     ('Luca', 'Gialli', 'luca.gialli@example.com', '5b5bb5byy5y5y5hy5b', 'utente', '5678901234', '1970-05-05', 5),
@@ -128,6 +127,7 @@ VALUES
     ('Elena', 'Viola', 'elena.viola@example.com', 'b5yby55yby5', 'utente', '7890123456', '1992-07-07', 7),
     ('Giorgio', 'Blu', 'giorgio.blu@example.com', '5yb5byy5hhhy55', 'utente', '8901234567', '1983-08-08', 8),
     ('Francesca', 'Grigi', 'francesca.grigi@example.com', '5yh5byb5yvb5yg5t', 'utente', '9012345678', '1995-09-09', 9),
+    ('signor', 'test', 'signor@test.com', 'XK8PiNaDNKms8pkaW3Xtb0uigwKSt5wBVT+8hHbJ7w+PBlCDRGr76JwmNCGf+meYCmJSSP9aoJrvp6bTxtTucg', 'utente', '9012345678', '1995-09-09', 9),
     ('Alessandro', 'Nero', 'alessandro.nero@example.com', '5byby5y5byh5jyj5y', 'utente', '0123456789', '1969-10-10', 10);
 INSERT INTO Corsi (nome_corso, descrizione, categoria, durata, programma, requisiti, posti_disponibili, data_inizio, data_fine, immagine)
 VALUES
