@@ -275,38 +275,6 @@ public class UtenteRepository {
         }
         return idCandidatura;
     }
-
-    // GRAZIE ALL'ID DEL CORSO CHIAMA IL METODO corsoRepository.getListaIdUtentiPerCorso(idCorso); E OTTIENE LA LISTA DEGLI ID DEI CANDIDATI
-    // CON UN CICLO FOR OTTIENE OGNI UTENTE TRAMITE IL SUO ID
-    /*
-    public List<CreateCandidaturaResponse> getListaUtentiByIdCorso(int idCorso) throws SQLException {
-        List<Utente> listaUtenti = new ArrayList<>();
-        List<Integer> listaId = corsoRepository.getListaIdUtentiPerCorso(idCorso);
-
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("SELECT nome, cognome, email FROM utenti WHERE id_utente = ?")) {
-                // CON UN CICLO FOR SI SOSTITUISCE L'id_utente PER OGNI ID NELLA LISTA
-                for (int i = 1; i <= listaId.size(); i++) {
-                    statement.setInt(1, i);
-
-                    var resultSet = statement.executeQuery();
-                    while (resultSet.next()) {
-                        var utente = new Utente();
-                        utente.setNome(resultSet.getString("nome"));
-                        utente.setCognome(resultSet.getString("cognome"));
-                        utente.setEmail(resultSet.getString("email"));
-
-                        listaUtenti.add(utente);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return listaUtenti;
-    }
-*/
-
     public void modificaInfo(int idUtente, CreateModifyRequest req) throws SQLException {
         StringBuilder query = new StringBuilder("UPDATE utenti SET ");
         List<Object> parameters = new ArrayList<>();

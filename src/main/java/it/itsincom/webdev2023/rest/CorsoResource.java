@@ -78,8 +78,8 @@ public class CorsoResource {
     @GET
     @Path("/{idCorso}/candidature")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Candidatura> getAllCandidature() throws SQLException {
-        return corsoRepository.getAllCandidature();
+    public List<Candidatura> getAllCandidature(@PathParam("idCorso") int idCorso) throws SQLException {
+        return corsoRepository.getAllCandidature(idCorso);
     }
 
     // TROVA UN CORSO TRAMITE CATEGORIA

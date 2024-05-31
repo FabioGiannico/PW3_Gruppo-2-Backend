@@ -110,12 +110,13 @@ public class CorsoRepository {
     }
 
     // OTTIENE TUTTE LE CANDIDATURE PRESENTI
-    public List<Candidatura> getAllCandidature() throws SQLException {
+    public List<Candidatura> getAllCandidature(int idCorso) throws SQLException {
         List<Candidatura> candidature = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM candidature")) {
+                    "SELECT * FROM candidature WHERE id_corso = ?")) {
+                statement.setInt(1, idCorso);
                 var resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
@@ -130,33 +131,6 @@ public class CorsoRepository {
             }
         }
         return candidature;
-    }
-
-    // OTTIENE LA LISTA DEGLI ID DEGLI UTENTI CANDIDATI AD UN DETERMINATO CORSO
-    public List<Integer> getListaIdUtentiPerCorso(int idCorso) throws SQLException {
-        List<Integer> listaIdUtenti = new ArrayList<>();
-
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "SELECT GROUP_CONCAT(id_utente) FROM candidature WHERE id_corso = ?")) {
-                statement.setInt(1, idCorso);
-                var resultSet = statement.executeQuery();
-
-                if (resultSet.next()) {
-                    String idUtente = resultSet.getString("GROUP_CONCAT(id_utente)");
-
-                    if (idUtente != null && !idUtente.isEmpty()) {
-                        String[] arrayIdUtenti = idUtente.split(",");
-                        for (String userId : arrayIdUtenti) {
-                            listaIdUtenti.add(Integer.parseInt(userId.trim()));
-                        }
-                    }
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return listaIdUtenti;
     }
 
     // OTTIENE IL CORSO TRAMITE IL SUO ID
